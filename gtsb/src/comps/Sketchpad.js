@@ -14,12 +14,13 @@ class Sketchpad extends React.Component {
     this.vertices = [];
     this.edges = [];
     this.selectedVertices = [];
+    this.selectedEdges = [];
     this.vertexIDCount = 0;
     this.edgeIDCount = 0;
     this.canDrawVertex = true;
-    this.selectionBorderRadius=4;
+    this.selectionBorderRadius = 4;
     this.vertexDiameter = 25;
-    this.edgeWidth=5;
+    this.edgeWidth = 5;
   }
 
   render() {
@@ -117,41 +118,62 @@ class Sketchpad extends React.Component {
   }
 
   selectElement=(isVertex, element)=> {
-    if(commandMode==='drawVertex')
+    if (commandMode === 'drawVertex')
       return;
-    element.isSelected = true;
+
     if (isVertex) {
-      this.selectedVertices.push(element);
-      if (this.selectedVertices.length === 2) {
-        // check command mode => draw edge, arc
-        switch (commandMode) {
-          case 'drawEdge':
-            const edge = {
-              id: this.edgeIDCount++,
-              vertex1: this.selectedVertices[0],
-              vertex2: this.selectedVertices[1],
-              offsetX: 0,
-              offsetY: 0
-            }
-            this.selectedVertices[0].edges.push(edge);
-            this.selectedVertices[1].edges.push(edge);
-            this.edges.push(edge);
-            break;
-          default:
-            console.log("Error, Unknown command mode");
-            break;
+      // should I deselect the vertex?
+      if (element.isSelected) {
+        this.selectedVertices = this.deselectElement(this.selectedVertices, element);
+      } else {
+        element.isSelected = true;
+        this.selectedVertices.push(element);
+        if (this.selectedVertices.length === 2) {
+          // check command mode => draw edge, arc
+          switch (commandMode) {
+            case 'drawEdge':
+              const edge = {
+                id: this.edgeIDCount++,
+                vertex1: this.selectedVertices[0],
+                vertex2: this.selectedVertices[1],
+                offsetX: 0,
+                offsetY: 0
+              }
+              this.selectedVertices[0].edges.push(edge);
+              this.selectedVertices[1].edges.push(edge);
+              this.edges.push(edge);
+              break;
+            default:
+              console.log("Error, Unknown command mode");
+              break;
+          }
+          this.selectedVertices = this.deselectElements(this.selectedVertices);
         }
-        this.deselectVertices();
       }
-    }
+    } else
+      if (commandMode === 'manipulator') {
+        //should I deselect the edge?
+        if (element.isSelected) {
+          this.selectedEdges = this.deselectElement(this.selectedEdges, element);
+        } else {
+          element.isSelected = true;
+          this.selectedEdges.push(element);
+        }
+      }
     this.setState(this.state);
   }
 
-  deselectVertices=()=> {
-    for (let i = 0; i < this.selectedVertices.length; i++) {
-      this.selectedVertices[i].isSelected = false;
+  deselectElements=(selectedList)=> {
+    for (let i = 0; i < selectedList.length; i++) {
+      selectedList[i].isSelected = false;
     }
-    this.selectedVertices = [];
+    return [];
+  }
+
+  deselectElement=(selectedList, element)=> {
+    element.isSelected = false;
+    selectedList = selectedList.filter((emt) => emt.id !== element.id);
+    return selectedList;
   }
 
   positionEdge=(edge)=>{
@@ -178,6 +200,7 @@ class Sketchpad extends React.Component {
     edge.x = x - (this.edgeWidth / 2);
     edge.theta = theta;
   }
+
 
   mouseEnterElement=(isVertex, element)=> {
     this.canDrawVertex = false;
