@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-undef
-class CommandContainer extends React.Component{
+class CommandContainer extends React.Component {
   render() {
     // eslint-disable-next-line no-undef
     return e(
@@ -43,6 +43,18 @@ class CommandContainer extends React.Component{
                 key: 'grabber'
               },
               'Grabber'
+          ),
+          //Delete Button
+          // eslint-disable-next-line no-undef
+          e(
+              'button',
+              {
+                onClick: this.toggleCommandMode.bind(this, 'delete'),
+                className: 'command_button',
+                id: 'delete',
+                key: 'delete'
+              },
+              'Delete'
           ),
           //Manipulator Button
           // eslint-disable-next-line no-undef

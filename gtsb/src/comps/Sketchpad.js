@@ -34,7 +34,7 @@ class Sketchpad extends React.Component {
     this.canDrawVertex = true;
 
     //33 ms = ~30fps
-    setInterval(this.attemptVertexMove, 33);
+    setInterval(this.update, 33);
   }
 
   render() {
@@ -147,8 +147,12 @@ class Sketchpad extends React.Component {
         }
         break;
       case 'manipulator':
-        if(vertex)
-          this.selectElement(true, vertex);
+        if(vertex) {
+          if (vertex.isSelected)
+            this.selectedVertices = this.deselectElement(this.selectedVertices, vertex);
+          else
+            this.selectElement(true, vertex);
+        }
         break;
       case 'drawEdge':
       case 'drawArc':
@@ -162,7 +166,8 @@ class Sketchpad extends React.Component {
     this.movingVertex = vertex;
   }
 
-  attemptVertexMove = () => {
+  update = () => {
+    //move Vertex
     if (commandMode === 'grabber' && this.movingVertex) {
       const dX = mouseMoveCTX.clientX - this.mousePrevPos[0];
       const dY = mouseMoveCTX.clientY - this.mousePrevPos[1];
@@ -172,6 +177,24 @@ class Sketchpad extends React.Component {
 
       this.mousePrevPos = [mouseMoveCTX.clientX, mouseMoveCTX.clientY];
       this.setState(this.state);
+    }
+
+    //was delete pressed?
+    if (commandMode === 'delete') {
+      //select all edges attached to vertices
+      for (let i = 0; i < this.selectedVertices.length; i++) {
+        const v = this.selectedVertices[i];
+        for (let j = 0; j < v.edges.length; j++) {
+          this.selectedEdges.push(v.edges[j]);
+        }
+      }
+
+      //delete all selected vertices and edges
+      this.deleteVertices();
+      this.deleteEdges();
+
+      //auto set mode to drawVertex after deletion
+      commandMode = 'drawVertex';
     }
   }
 
@@ -262,6 +285,23 @@ class Sketchpad extends React.Component {
     selectedList = selectedList.filter((emt) => emt.id !== element.id);
     this.setState(this.state);
     return selectedList;
+  }
+
+  //-----------------Deletion----------------------------//
+  deleteVertices = () => {
+    for (let i = 0; i < this.selectedVertices.length; i++) {
+      this.vertices = this.vertices.filter((vertex) => vertex.id !== this.selectedVertices[i].id);
+    }
+    this.selectedVertices = [];
+    this.setState(this.state);
+  }
+
+  deleteEdges = () => {
+    for (let i = 0; i < this.selectedEdges.length; i++) {
+      this.edges = this.edges.filter((edge) => edge.id !== this.selectedEdges[i].id);
+    }
+    this.selectedEdges = [];
+    this.setState(this.state);
   }
 
   //-------------------Element Hovering------------------------//
