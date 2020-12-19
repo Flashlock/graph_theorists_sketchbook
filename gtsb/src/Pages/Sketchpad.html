@@ -7,10 +7,9 @@
 </head>
 <body>
 <!-- We will put our React component inside this div. -->
-<div id="sketchpad_container"></div>
-<div id="command_container">
-  <button class="command_button" onclick=commandMode='drawVertex'>Draw Vertex</button>
-  <button class="command_button" onclick=commandMode='drawEdge'>Draw Edge</button>
+<div id="pad_wrapper">
+  <div id="sketchpad_container"></div>
+  <div id="command_container"></div>
 </div>
 
 <!-- Load React. -->
@@ -20,6 +19,7 @@
 
 <!-- Load our React component. -->
 <script src="../comps/Sketchpad.js"></script>
+<script src="../comps/CommandContainer.js"></script>
 
 </body>
 </html>

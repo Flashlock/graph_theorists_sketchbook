@@ -32,7 +32,7 @@ class Sketchpad extends React.Component {
     return e(
         'div',
         {
-          id: 'Sketchpad',
+          id: 'sketchpad',
           onClick: this.drawVertex
         },
         [
@@ -170,6 +170,7 @@ class Sketchpad extends React.Component {
 
     if (isVertex) {
       // should I deselect the vertex?
+      // this won't work once loops are incorporated. Need a deselect all button perhaps
       if (element.isSelected) {
         this.selectedVertices = this.deselectElement(this.selectedVertices, element);
       } else {
@@ -228,6 +229,6 @@ class Sketchpad extends React.Component {
   }
 }
 
-const domContainer = document.querySelector('#sketchpad_container');
+const domContainerSketchpad = document.querySelector('#sketchpad_container');
 // eslint-disable-next-line no-undef
-ReactDOM.render(e(Sketchpad), domContainer);
+ReactDOM.render(e(Sketchpad), domContainerSketchpad);
