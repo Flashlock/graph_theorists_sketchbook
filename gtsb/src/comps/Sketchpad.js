@@ -78,17 +78,17 @@ class Sketchpad extends React.Component {
 //edge element
   EdgeRenderer = (edge) => {
     this.positionEdge(edge);
-    const style={
+    const style = {
       position: 'absolute',
-      top: edge.y,
-      left: edge.x,
-      background: edge.isHovering? 'pink': 'black',
+      top: edge.isSelected ? edge.y - this.selectionBorderRadius : edge.y,
+      left: edge.isSelected ? edge.x - this.selectionBorderRadius : edge.x,
+      background: edge.isHovering ? 'pink' : 'black',
       border: edge.isSelected ? this.selectionBorderRadius + 'px solid pink' : null,
       width: this.edgeWidth,
       height: edge.height,
       transform: 'rotate(' + edge.theta.toString() + 'rad)',
     }
-    const id='e'+edge.id.toString();
+    const id = 'e' + edge.id.toString();
 
     return e(
         'div',
