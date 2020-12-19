@@ -4,6 +4,8 @@
 // eslint-disable-next-line no-undef
 const e = React.createElement;
 
+let commandMode = 'drawVertex';
+
 // eslint-disable-next-line no-undef
 class Sketchpad extends React.Component {
   constructor(props) {
@@ -42,7 +44,7 @@ class Sketchpad extends React.Component {
   }
 
   //vertex element
-  VertexRenderer = (vertex)=> {
+  VertexRenderer = (vertex) => {
     const vertexDiameter = 25;
     const x = vertex.isSelected ? vertex.x - vertexDiameter / 2 - this.selectionBorderRadius : vertex.x - vertexDiameter / 2;
     const y = vertex.isSelected ? vertex.y - vertexDiameter / 2 - this.selectionBorderRadius : vertex.y - vertexDiameter / 2;
@@ -77,7 +79,7 @@ class Sketchpad extends React.Component {
   }
 
   drawVertex = (e) => {
-    if (!this.canDrawVertex)
+    if (!this.canDrawVertex || commandMode !== 'drawVertex')
       return;
     const vertex = {
       id: this.vertexIDCount++,
