@@ -196,6 +196,18 @@ class Sketchpad extends React.Component {
       //auto set mode to drawVertex after deletion
       commandMode = 'drawVertex';
     }
+
+    //was clear pad pressed?
+    if (commandMode === 'clearPad') {
+      //delete all
+      this.selectedVertices = this.vertices;
+      this.selectedEdges = this.edges;
+
+      this.deleteEdges();
+      this.deleteVertices();
+
+      commandMode = 'drawVertex';
+    }
   }
 
   //-------------------Edge Manipulation----------------//

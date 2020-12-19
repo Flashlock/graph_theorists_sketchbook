@@ -56,6 +56,18 @@ class CommandContainer extends React.Component {
               },
               'Delete'
           ),
+          //Clear Pad Button
+          // eslint-disable-next-line no-undef
+          e(
+              'button',
+              {
+                onClick: this.toggleCommandMode.bind(this, 'clearPad'),
+                className: 'command_button',
+                id: 'clearPad',
+                key: 'clearPad'
+              },
+              'Clear Pad'
+          ),
           //Manipulator Button
           // eslint-disable-next-line no-undef
           e(
