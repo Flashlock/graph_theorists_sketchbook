@@ -32,6 +32,18 @@ class CommandContainer extends React.Component{
               },
               'Draw Edge'
           ),
+          //Grabber Button
+          // eslint-disable-next-line no-undef
+          e(
+              'button',
+              {
+                onClick: this.toggleCommandMode.bind(this, 'grabber'),
+                className: 'command_button',
+                id: 'grabber',
+                key: 'grabber'
+              },
+              'Grabber'
+          ),
           //Manipulator Button
           // eslint-disable-next-line no-undef
           e(

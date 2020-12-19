@@ -1,7 +1,5 @@
-#sketchpad {
-  width: 1000px;
-  height: 500px;
-  background: lightgray;
+#pad_wrapper{
+  display: grid;
 }
 
 #sketchpad_container{
@@ -16,7 +14,8 @@
   grid-row-end: 1;
 }
 
-#pad_wrapper{
-  display: grid;
-
+#sketchpad {
+  width: 1000px;
+  height: 500px;
+  background: lightgray;
 }
