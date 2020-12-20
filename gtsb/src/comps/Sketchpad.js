@@ -22,6 +22,8 @@ class Sketchpad extends React.Component {
     this.selectionBorderRadius = 4;
     this.vertexDiameter = 25;
     this.edgeWidth = 5;
+    this.edgeSpacing = 8;
+    this.loopSpacing = 12;
     this.loopDiameter = 50;
     //element lists
     this.vertices = [];
@@ -124,15 +126,18 @@ class Sketchpad extends React.Component {
   }
 
   LoopRenderer = (loop) => {
+    const r = loop.loopDiameter / 2;
+    const offset = -(r - r * Math.sqrt(2) / 2);
     //position the loop - pretty much only for parallel loops
     const style = {
       position: 'absolute',
-      top: loop.vertex1.y + this.vertexDiameter / 2 - this.loopDiameter/2,
-      left: loop.vertex1.x + this.vertexDiameter / 2 - this.loopDiameter/2,
+      top: loop.vertex1.y + offset,
+      left: loop.vertex1.x + offset,
       borderRadius: '50%',
       border: (loop.isSelected || loop.isHovering) ? this.edgeWidth + 'px solid pink' : this.edgeWidth + 'px solid black',
-      height: this.loopDiameter,
-      width: this.loopDiameter
+      height: loop.loopDiameter,
+      width: loop.loopDiameter,
+      zIndex: loop.zIndex
     }
     const id = 'e' + loop.id.toString();
 
@@ -163,6 +168,8 @@ class Sketchpad extends React.Component {
     this.setState(this.state);
   }
 
+  //when a vertex is clicked, it's assigned as the moving vertex.
+  //vertex selection and deselection are routed through here first
   assignVertex = (vertex) => {
     //start with the mode
     switch(commandMode){
@@ -203,6 +210,12 @@ class Sketchpad extends React.Component {
 
       this.movingVertex.x += dX;
       this.movingVertex.y += dY;
+
+      //take care of parallel edges
+      for (let i = 0; i < this.movingVertex.edges.length; i++) {
+        const edge = this.movingVertex.edges[i];
+        this.applyParallelEdges(edge.vertex1, edge.vertex2);
+      }
 
       this.mousePrevPos = [mouseMoveCTX.clientX, mouseMoveCTX.clientY];
       this.setState(this.state);
@@ -277,11 +290,62 @@ class Sketchpad extends React.Component {
     vertex1.edges.push(edge);
     if (!edge.isLoop)
       vertex2.edges.push(edge);
+
+    this.applyParallelEdges(vertex1, vertex2);
+
     this.edges.push(edge);
+  }
+
+  applyParallelEdges = (vertex1, vertex2) => {
+    //find parallel edges between these two vertices and calculate offsets
+    const parallelEdges = vertex1.edges.filter((edge) => {
+      if ((vertex1.id === edge.vertex1.id && vertex2.id === edge.vertex2.id)
+          || (vertex1.id === edge.vertex2.id && vertex2.id === edge.vertex1.id))
+        return edge;
+    });
+
+    this.edgeOffsetCalculator(parallelEdges, vertex1, vertex2);
+  }
+
+  edgeOffsetCalculator = (parallelEdges, vertex1, vertex2) =>{
+    //loop check
+    if (vertex1.id === vertex2.id) {
+      let loopDiameter = this.loopDiameter;
+      for (let i = 0; i < parallelEdges.length; i++) {
+        parallelEdges[i].loopDiameter = loopDiameter;
+        loopDiameter += this.edgeWidth + this.loopSpacing;
+        parallelEdges[i].zIndex = 9998 - i;
+      }
+    } else {
+      let slope = (vertex2.y - vertex1.y) / (vertex2.x - vertex1.x);
+      slope = -1 / slope;
+      //check parity
+      const isOdd = parallelEdges.length % 2 === 1;
+      let distance = isOdd ? 0 : this.edgeSpacing / 2;
+      for (let i = 0; i < parallelEdges.length; i++) {
+        //calculate the offsets
+        const x = (distance / Math.sqrt(1 + (slope * slope)));
+        const y = slope * x;
+        
+        //apply the offsets
+        parallelEdges[i].offsetX = x;
+        parallelEdges[i].offsetY = y;
+
+        //increment the magnitude of distance?
+        if ((isOdd && i % 2 === 0) || (!isOdd && i % 2 === 1)) {
+          //increment odd sets on even i's and even sets on odd i's
+          let val = Math.abs(distance) + this.edgeSpacing;
+          distance = distance < 0 ? -val : val;
+        }
+
+        distance *= -1;
+      }
+    }
   }
 
   //---------------Selection/DeSelection----------------//
   selectElement = (isVertex, element) => {
+    //can't select anything in vertex mode
     if (commandMode === 'drawVertex')
       return;
 
@@ -294,14 +358,20 @@ class Sketchpad extends React.Component {
 
           if (this.selectedVertices.length === 2) {
             // check command mode => draw edge, arc
-            if (commandMode === 'drawEdge')
+            if (commandMode === 'drawEdge') {
               this.drawEdge(this.selectedVertices[0], this.selectedVertices[1]);
-            this.selectedVertices = this.deselectElements(this.selectedVertices);
+            }
+              this.selectedVertices = this.deselectElements(this.selectedVertices);
           }
         }
         //selection and deselection with manipulator
-        else{
-
+        else {
+          if (element.isSelected) {
+            this.deselectElement(this.selectedVertices, element);
+          } else {
+            element.isSelected = true;
+            this.selectedVertices.push(element);
+          }
         }
     } else
       if (commandMode === 'manipulator') {
