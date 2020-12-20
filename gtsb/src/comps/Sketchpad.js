@@ -127,26 +127,62 @@ class Sketchpad extends React.Component {
     //position the loop - pretty much only for parallel loops
     const style = {
       position: 'absolute',
-      top: loop.vertex1.y + this.vertexDiameter / 2 - this.loopDiameter/2,
-      left: loop.vertex1.x + this.vertexDiameter / 2 - this.loopDiameter/2,
+      top: loop.vertex1.y + this.vertexDiameter / 2 - this.loopDiameter / 2,
+      left: loop.vertex1.x + this.vertexDiameter / 2 - this.loopDiameter / 2,
       borderRadius: '50%',
-      border: (loop.isSelected || loop.isHovering) ? this.edgeWidth + 'px solid pink' : this.edgeWidth + 'px solid black',
+      border: loop.isHovering ? this.edgeWidth + 'px solid pink' : this.edgeWidth + 'px solid black',
       height: this.loopDiameter,
       width: this.loopDiameter
     }
     const id = 'e' + loop.id.toString();
 
-    return e(
-        'div',
-        {
-          style: style,
-          id: id,
-          key: id,
-          onClick: this.selectElement.bind(this, false, loop),
-          onMouseEnter: this.mouseEnterElement.bind(this, false, loop),
-          onMouseLeave: this.mouseExitElement.bind(this, false, loop)
-        }
-    );
+    //IDEA to create selection illusion, draw two loops surrounding this one as children
+    if (loop.isSelected) {
+      const styleInner = {
+        position: 'absolute',
+        top: loop.vertex1.y + this.vertexDiameter / 2 - this.loopDiameter / 2 + this.edgeWidth,
+        left: loop.vertex1.x + this.vertexDiameter / 2 - this.loopDiameter / 2 + this.edgeWidth,
+        borderRadius: '50%',
+        border: this.edgeWidth + 'px solid pink',
+        height: this.loopDiameter - this.edgeWidth,
+        width: this.loopDiameter - this.edgeWidth
+      }
+      const loopInner = e(
+          'div',
+          {
+            style: style,
+            id: 'il ' + id,
+            key: 'il' + id
+          }
+      );
+      console.log(loopInner.key);
+      return e(
+          'div',
+          {
+            style: style,
+            id: id,
+            key: id,
+            onClick: this.selectElement.bind(this, false, loop),
+            onMouseEnter: this.mouseEnterElement.bind(this, false, loop),
+            onMouseLeave: this.mouseExitElement.bind(this, false, loop)
+          }
+              [
+              loopInner
+              ]
+      );
+    } else {
+      return e(
+          'div',
+          {
+            style: style,
+            id: id,
+            key: id,
+            onClick: this.selectElement.bind(this, false, loop),
+            onMouseEnter: this.mouseEnterElement.bind(this, false, loop),
+            onMouseLeave: this.mouseExitElement.bind(this, false, loop)
+          }
+      );
+    }
   }
 
   //----------------Vertex Manipulation-------------------//
