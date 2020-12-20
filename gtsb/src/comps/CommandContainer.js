@@ -32,6 +32,18 @@ class CommandContainer extends React.Component {
               },
               'Draw Edge'
           ),
+          //draw Arc Button
+          // eslint-disable-next-line no-undef
+          e(
+              'button',
+              {
+                onClick: this.toggleCommandMode.bind(this, 'drawArc'),
+                className: 'command_button',
+                id: 'draw_arc',
+                key: 'draw_arc'
+              },
+              'Draw Arc'
+          ),
           //Grabber Button
           // eslint-disable-next-line no-undef
           e(

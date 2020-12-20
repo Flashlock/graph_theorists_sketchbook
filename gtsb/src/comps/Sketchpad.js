@@ -22,9 +22,10 @@ class Sketchpad extends React.Component {
     this.selectionBorderRadius = 4;
     this.vertexDiameter = 25;
     this.edgeWidth = 5;
-    this.edgeSpacing = 8;
+    this.edgeSpacing = 18;
     this.loopSpacing = 12;
     this.loopDiameter = 50;
+    this.arrowSize = 10;
     //element lists
     this.vertices = [];
     this.edges = [];
@@ -111,6 +112,9 @@ class Sketchpad extends React.Component {
       transform: 'rotate(' + edge.theta.toString() + 'rad)',
     }
     const id = 'e' + edge.id.toString();
+    if(edge.isArc){
+      return this.ArcRenderer(edge, id, style);
+    }
 
     return e(
         'div',
@@ -127,8 +131,7 @@ class Sketchpad extends React.Component {
 
   LoopRenderer = (loop) => {
     const r = loop.loopDiameter / 2;
-    const offset = -(r - r * Math.sqrt(2) / 2);
-    //position the loop - pretty much only for parallel loops
+    const offset = -(r - r * Math.sqrt(2) / 2 + this.edgeWidth/2);
     const style = {
       position: 'absolute',
       top: loop.vertex1.y + offset,
@@ -151,6 +154,52 @@ class Sketchpad extends React.Component {
           onMouseEnter: this.mouseEnterElement.bind(this, false, loop),
           onMouseLeave: this.mouseExitElement.bind(this, false, loop)
         }
+    );
+  }
+
+  ArcRenderer = (arc, id, style) => {
+    if(arc.vertex1.id!==arc.targetVertex.id) {
+      //switcharoo
+      const temp = arc.vertex1;
+      arc.vertex1 = arc.vertex2;
+      arc.vertex2 = temp;
+      this.positionEdge(arc);
+    }
+
+    const arrowStyle = {
+      position: 'relative',
+      top: arc.height / 2,
+      left: -(this.arrowSize + this.edgeWidth) / 2,
+      border: arc.isSelected ? this.selectionBorderRadius + 'px solid pink' : null,
+      width: 0,
+      height: 0,
+      borderLeft: this.arrowSize + 'px solid transparent',
+      borderRight: this.arrowSize + 'px solid transparent',
+      borderBottom: arc.isHovering ? this.arrowSize + 'px solid pink' : this.arrowSize + 'px solid blue'
+    }
+    return e(
+        'div',
+        {
+          style: style,
+          id: id,
+          key: id,
+          onClick: this.selectElement.bind(this, false, arc),
+          onMouseEnter: this.mouseEnterElement.bind(this, false, arc),
+          onMouseLeave: this.mouseExitElement.bind(this, false, arc)
+        },
+        [
+          e(
+              'div',
+              {
+                style: arrowStyle,
+                id: 'a' + id,
+                key: 'a' + id,
+                onClick: this.selectElement.bind(this, false, arc),
+                onMouseEnter: this.mouseEnterElement.bind(this, false, arc),
+                onMouseLeave: this.mouseExitElement.bind(this, false, arc)
+              }
+          )
+        ]
     );
   }
 
@@ -294,6 +343,7 @@ class Sketchpad extends React.Component {
     this.applyParallelEdges(vertex1, vertex2);
 
     this.edges.push(edge);
+    return edge;
   }
 
   applyParallelEdges = (vertex1, vertex2) => {
@@ -350,29 +400,36 @@ class Sketchpad extends React.Component {
       return;
 
     if (isVertex) {
-        //attempt to draw an edge
-        if (commandMode !== 'manipulator') {
-          //select the element
-            element.isSelected = true;
-            this.selectedVertices.push(element);
+      //attempt to draw an edge
+      if (commandMode !== 'manipulator') {
+        //select the element
+        element.isSelected = true;
+        this.selectedVertices.push(element);
 
-          if (this.selectedVertices.length === 2) {
-            // check command mode => draw edge, arc
-            if (commandMode === 'drawEdge') {
-              this.drawEdge(this.selectedVertices[0], this.selectedVertices[1]);
+        if (this.selectedVertices.length === 2) {
+          // check command mode => draw edge, arc
+          if (commandMode === 'drawEdge') {
+            this.drawEdge(this.selectedVertices[0], this.selectedVertices[1]);
+          } else
+            if (commandMode === 'drawArc') {
+              const arc = this.drawEdge(this.selectedVertices[1], this.selectedVertices[0]);
+              arc.isArc = true;
+              arc.targetVertex = this.selectedVertices[1];
+            } else {
+              console.log("Whoopsie");
             }
-              this.selectedVertices = this.deselectElements(this.selectedVertices);
-          }
+          this.selectedVertices = this.deselectElements(this.selectedVertices);
         }
-        //selection and deselection with manipulator
-        else {
-          if (element.isSelected) {
-            this.deselectElement(this.selectedVertices, element);
-          } else {
-            element.isSelected = true;
-            this.selectedVertices.push(element);
-          }
+      }
+      //selection and deselection with manipulator
+      else {
+        if (element.isSelected) {
+          this.deselectElement(this.selectedVertices, element);
+        } else {
+          element.isSelected = true;
+          this.selectedVertices.push(element);
         }
+      }
     } else
       if (commandMode === 'manipulator') {
         //should I deselect the edge?
