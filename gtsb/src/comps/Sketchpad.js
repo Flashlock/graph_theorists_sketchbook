@@ -22,6 +22,7 @@ class Sketchpad extends React.Component {
     this.selectionBorderRadius = 4;
     this.vertexDiameter = 25;
     this.edgeWidth = 5;
+    this.loopDiameter = 50;
     //element lists
     this.vertices = [];
     this.edges = [];
@@ -61,7 +62,6 @@ class Sketchpad extends React.Component {
   }
 
   //------------Element Renderers---------------------//
-  //vertex element
   VertexRenderer = (vertex) => {
     const x = vertex.isSelected ? vertex.x - this.vertexDiameter / 2 - this.selectionBorderRadius : vertex.x - this.vertexDiameter / 2;
     const y = vertex.isSelected ? vertex.y - this.vertexDiameter / 2 - this.selectionBorderRadius : vertex.y - this.vertexDiameter / 2;
@@ -92,8 +92,11 @@ class Sketchpad extends React.Component {
     );
   }
 
-  //edge element
   EdgeRenderer = (edge) => {
+    if(edge.isLoop){
+      return this.LoopRenderer(edge);
+    }
+
     this.positionEdge(edge);
     const style = {
       position: 'absolute',
@@ -117,7 +120,33 @@ class Sketchpad extends React.Component {
           onMouseEnter: this.mouseEnterElement.bind(this, false, edge),
           onMouseLeave: this.mouseExitElement.bind(this, false, edge)
         }
-    )
+    );
+  }
+
+  LoopRenderer = (loop) => {
+    //position the loop - pretty much only for parallel loops
+    const style = {
+      position: 'absolute',
+      top: loop.vertex1.y + this.vertexDiameter / 2 - this.loopDiameter/2,
+      left: loop.vertex1.x + this.vertexDiameter / 2 - this.loopDiameter/2,
+      borderRadius: '50%',
+      border: (loop.isSelected || loop.isHovering) ? this.edgeWidth + 'px solid pink' : this.edgeWidth + 'px solid black',
+      height: this.loopDiameter,
+      width: this.loopDiameter
+    }
+    const id = 'e' + loop.id.toString();
+
+    return e(
+        'div',
+        {
+          style: style,
+          id: id,
+          key: id,
+          onClick: this.selectElement.bind(this, false, loop),
+          onMouseEnter: this.mouseEnterElement.bind(this, false, loop),
+          onMouseLeave: this.mouseExitElement.bind(this, false, loop)
+        }
+    );
   }
 
   //----------------Vertex Manipulation-------------------//
@@ -236,16 +265,18 @@ class Sketchpad extends React.Component {
     edge.theta = theta;
   }
 
-  drawEdge = (vertex1, vertex2) =>{
+  drawEdge = (vertex1, vertex2) => {
     const edge = {
       id: this.edgeIDCount++,
       vertex1: vertex1,
       vertex2: vertex2,
       offsetX: 0,
-      offsetY: 0
+      offsetY: 0,
+      isLoop: vertex1.id === vertex2.id
     }
     vertex1.edges.push(edge);
-    vertex2.edges.push(edge);
+    if (!edge.isLoop)
+      vertex2.edges.push(edge);
     this.edges.push(edge);
   }
 
@@ -255,21 +286,22 @@ class Sketchpad extends React.Component {
       return;
 
     if (isVertex) {
-      // should I deselect the vertex?
-      // this won't work once loops are incorporated. Need a deselect all button perhaps
-      if (!element.isSelected) {
-        element.isSelected = true;
-        this.selectedVertices.push(element);
-      }
-
         //attempt to draw an edge
         if (commandMode !== 'manipulator') {
+          //select the element
+            element.isSelected = true;
+            this.selectedVertices.push(element);
+
           if (this.selectedVertices.length === 2) {
             // check command mode => draw edge, arc
             if (commandMode === 'drawEdge')
               this.drawEdge(this.selectedVertices[0], this.selectedVertices[1]);
             this.selectedVertices = this.deselectElements(this.selectedVertices);
           }
+        }
+        //selection and deselection with manipulator
+        else{
+
         }
     } else
       if (commandMode === 'manipulator') {
