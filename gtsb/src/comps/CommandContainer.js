@@ -91,12 +91,26 @@ class CommandContainer extends React.Component {
                 key: 'manipulator'
               },
               'Manipulator'
+          ),
+          // Display vertex data
+          // eslint-disable-next-line no-undef
+          e(
+              'button',
+              {
+                onClick: this.toggleCommandMode.bind(this, 'vertexData'),
+                className: 'command_button',
+                id: 'vertexData',
+                key: 'vertexData'
+              },
+              'Vertex Data'
           )
         ]
     );
   }
 
   toggleCommandMode = (command) => {
+    // eslint-disable-next-line no-undef
+    prevCommandMode = commandMode;
     // eslint-disable-next-line no-undef
     commandMode = command;
   }

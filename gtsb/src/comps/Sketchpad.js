@@ -5,6 +5,7 @@
 const e = React.createElement;
 
 let commandMode = 'drawVertex';
+let prevCommandMode = commandMode;
 let mouseMoveCTX;
 document.getElementById('pad_wrapper').addEventListener('mousemove', (event)=> {
   mouseMoveCTX = event;
@@ -36,6 +37,7 @@ class Sketchpad extends React.Component {
     this.edgeIDCount = 0;
     //switches
     this.canDrawVertex = true;
+    this.displayVertexData=false;
 
     //33 ms = ~30fps
     setInterval(this.update, 33);
@@ -81,6 +83,38 @@ class Sketchpad extends React.Component {
     }
     const id = 'v' + vertex.id.toString();
 
+    if (vertex.displayVertexData) {
+      return e(
+          'div',
+          {
+            style: style,
+            id: id,
+            key: id,
+            onMouseEnter: this.mouseEnterElement.bind(this, true, vertex),
+            onMouseLeave: this.mouseExitElement.bind(this, true, vertex),
+            onMouseDown: this.assignVertex.bind(this, vertex),
+            onMouseUp: this.assignVertex.bind(this, null)
+          },
+          [
+            e(
+                'div',
+                {
+                  className: 'vertex_id_display',
+                  key: 'idDisplay' + id
+                },
+                vertex.id.toString()
+            ),
+            e(
+                'div',
+                {
+                  className: 'vertex_deg_display',
+                  key: 'degDisplay' + id
+                },
+                vertex.edges.length.toString()
+            )
+          ]
+      );
+    }
     return e(
         'div',
         {
@@ -195,7 +229,7 @@ class Sketchpad extends React.Component {
               'div',
               {
                 style: arrowStyle,
-                id: 'a' + id,
+                className: 'arrow',
                 key: 'a' + id,
                 onClick: this.selectElement.bind(this, false, arc),
                 onMouseEnter: this.mouseEnterElement.bind(this, false, arc),
@@ -214,7 +248,8 @@ class Sketchpad extends React.Component {
       id: this.vertexIDCount++,
       x: e.clientX,
       y: e.clientY,
-      edges: []
+      edges: [],
+      displayVertexData: this.displayVertexData
     }
     this.vertices.push(vertex);
     this.setState(this.state);
@@ -301,6 +336,16 @@ class Sketchpad extends React.Component {
       this.deleteVertices();
 
       commandMode = 'drawVertex';
+    }
+
+    //toggle vertex data?
+    if (commandMode === 'vertexData') {
+      this.displayVertexData = !this.displayVertexData;
+      for (let i = 0; i < this.vertices.length; i++) {
+        this.vertices[i].displayVertexData = this.displayVertexData;
+      }
+      commandMode = prevCommandMode;
+      this.setState(this.state);
     }
   }
 
