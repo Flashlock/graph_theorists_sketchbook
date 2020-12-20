@@ -143,6 +143,9 @@ class Sketchpad extends React.Component {
       zIndex: loop.zIndex
     }
     const id = 'e' + loop.id.toString();
+    if(loop.isArc){
+      return this.ArcRenderer(loop, id, style);
+    }
 
     return e(
         'div',
@@ -158,7 +161,7 @@ class Sketchpad extends React.Component {
   }
 
   ArcRenderer = (arc, id, style) => {
-    if(arc.vertex1.id!==arc.targetVertex.id) {
+    if (!arc.isLoop && arc.vertex1.id !== arc.targetVertex.id) {
       //switcharoo
       const temp = arc.vertex1;
       arc.vertex1 = arc.vertex2;
@@ -168,8 +171,8 @@ class Sketchpad extends React.Component {
 
     const arrowStyle = {
       position: 'relative',
-      top: arc.height / 2,
-      left: -(this.arrowSize + this.edgeWidth) / 2,
+      top: arc.isLoop ? arc.loopDiameter / 2 - this.arrowSize / 2 : arc.height / 2,
+      left: arc.isLoop ? arc.loopDiameter - this.arrowSize / 2 - this.edgeWidth/2 : -(this.arrowSize + this.edgeWidth) / 2,
       border: arc.isSelected ? this.selectionBorderRadius + 'px solid pink' : null,
       width: 0,
       height: 0,
