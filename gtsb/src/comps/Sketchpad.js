@@ -520,15 +520,22 @@ class Sketchpad extends React.Component {
     }
     this.selectedVertices = [];
     graphVertices = this.vertices;
+    graphEdges = this.edges
     this.setState(this.state);
   }
 
   deleteEdges = () => {
     for (let i = 0; i < this.selectedEdges.length; i++) {
       this.edges = this.edges.filter((edge) => edge.id !== this.selectedEdges[i].id);
+      const edge = this.selectedEdges[i];
+      const v1 = edge.vertex1;
+      const v2 = edge.vertex2;
+      v1.edges = v1.edges.filter((e) => e.id !== edge.id);
+      v2.edges = v2.edges.filter((e) => e.id !== edge.id);
     }
     this.selectedEdges = [];
     graphEdges = this.edges;
+    graphVertices = this.vertices;
     this.setState(this.state);
   }
 

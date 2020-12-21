@@ -2,10 +2,10 @@
 class GraphData extends React.Component {
   constructor(props) {
     super(props);
-    this.state={};
-    this.vertexCount=graphVertices.length;
-    this.edgeCount=graphEdges.length;
-    this.isBP=false;
+    this.state = {};
+    this.vertexCount = graphVertices.length;
+    this.edgeCount = graphEdges.length;
+    this.isBP = false;
     setInterval(this.update.bind(this), 33);
   }
 
@@ -55,21 +55,21 @@ class GraphData extends React.Component {
     );
   }
 
-  update(){
-    if(graphVertices.length!==this.vertexCount || graphEdges.length!==this.edgeCount){
-      this.vertexCount=graphVertices.length;
-      this.edgeCount=graphEdges.length;
+  update() {
+    if (graphVertices.length !== this.vertexCount || graphEdges.length !== this.edgeCount) {
+      this.vertexCount = graphVertices.length;
+      this.edgeCount = graphEdges.length;
       this.setState(this.state);
     }
   }
 
   determineBipartite = () => {
-    let visitedVertices=[];
-    this.isBP=true;
-    while(visitedVertices.length<graphVertices.length){
-      const unseenVertices=this.findUnseenVertices(visitedVertices);
+    let visitedVertices = [];
+    this.isBP = true;
+    while (visitedVertices.length < graphVertices.length) {
+      const unseenVertices = this.findUnseenVertices(visitedVertices);
       this.bpHelper(unseenVertices[0], visitedVertices, 1);
-      if(!this.isBP)
+      if (!this.isBP)
         break;
     }
   }
