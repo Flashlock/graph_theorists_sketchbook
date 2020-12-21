@@ -19,3 +19,28 @@
   height: 500px;
   background: lightgray;
 }
+
+.vertex_id {
+  position: relative;
+  border: none;
+  background: none;
+  text-align: center;
+  top: -100%;
+  left: -295%;
+  font-weight: normal;
+}
+
+.vertex_id::-webkit-input-placeholder{
+  font-weight: normal;
+  color: black;
+}
+
+.vertex_id:focus{
+  outline: none;
+}
+
+.vertex_deg{
+  position: relative;
+  top: 50%;
+  left: 35%;
+}

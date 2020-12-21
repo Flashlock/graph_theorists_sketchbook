@@ -97,17 +97,18 @@ class Sketchpad extends React.Component {
           },
           [
             e(
-                'div',
+                'input',
                 {
-                  className: 'vertex_id_display',
-                  key: 'idDisplay' + id
-                },
-                vertex.id.toString()
+                  className: 'vertex_id',
+                  key: 'idDisplay' + id,
+                  type: 'text',
+                  placeholder: vertex.id.toString()
+                }
             ),
             e(
                 'div',
                 {
-                  className: 'vertex_deg_display',
+                  className: 'vertex_deg',
                   key: 'degDisplay' + id
                 },
                 vertex.edges.length.toString()
@@ -289,6 +290,10 @@ class Sketchpad extends React.Component {
     this.movingVertex = vertex;
   }
 
+  renameVertex = (vertex, event) =>{
+
+  }
+
   update = () => {
     //move Vertex
     if (commandMode === 'grabber' && this.movingVertex) {
@@ -323,7 +328,7 @@ class Sketchpad extends React.Component {
       this.deleteEdges();
 
       //auto set mode to drawVertex after deletion
-      commandMode = 'drawVertex';
+      commandMode = prevCommandMode;
     }
 
     //was clear pad pressed?
