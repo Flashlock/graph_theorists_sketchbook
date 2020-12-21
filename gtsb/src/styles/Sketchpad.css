@@ -2,14 +2,20 @@
   display: grid;
 }
 
-#sketchpad_container{
+#data_container{
   grid-column-start: 1;
   grid-row-start: 1;
   grid-row-end: 1;
 }
 
-#command_container{
+#sketchpad_container{
   grid-column-start: 2;
+  grid-row-start: 1;
+  grid-row-end: 1;
+}
+
+#command_container{
+  grid-column-start: 3;
   grid-row-start: 1;
   grid-row-end: 1;
 }

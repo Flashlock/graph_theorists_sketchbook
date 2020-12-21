@@ -11,6 +11,9 @@ document.getElementById('pad_wrapper').addEventListener('mousemove', (event)=> {
   mouseMoveCTX = event;
 });
 
+let graphVertices=[];
+let graphEdges=[];
+
 // eslint-disable-next-line no-undef
 class Sketchpad extends React.Component {
   constructor(props) {
@@ -64,6 +67,66 @@ class Sketchpad extends React.Component {
           )
         ]
     );
+  }
+
+  update = () => {
+    //move Vertex
+    if (commandMode === 'grabber' && this.movingVertex) {
+      const dX = mouseMoveCTX.clientX - this.mousePrevPos[0];
+      const dY = mouseMoveCTX.clientY - this.mousePrevPos[1];
+
+      this.movingVertex.x += dX;
+      this.movingVertex.y += dY;
+
+      //take care of parallel edges
+      for (let i = 0; i < this.movingVertex.edges.length; i++) {
+        const edge = this.movingVertex.edges[i];
+        this.applyParallelEdges(edge.vertex1, edge.vertex2);
+      }
+
+      this.mousePrevPos = [mouseMoveCTX.clientX, mouseMoveCTX.clientY];
+      this.setState(this.state);
+    }
+
+    //was delete pressed?
+    if (commandMode === 'delete') {
+      //select all edges attached to vertices
+      for (let i = 0; i < this.selectedVertices.length; i++) {
+        const v = this.selectedVertices[i];
+        for (let j = 0; j < v.edges.length; j++) {
+          this.selectedEdges.push(v.edges[j]);
+        }
+      }
+
+      //delete all selected vertices and edges
+      this.deleteVertices();
+      this.deleteEdges();
+
+      //auto set mode to drawVertex after deletion
+      commandMode = prevCommandMode;
+    }
+
+    //was clear pad pressed?
+    if (commandMode === 'clearPad') {
+      //delete all
+      this.selectedVertices = this.vertices;
+      this.selectedEdges = this.edges;
+
+      this.deleteEdges();
+      this.deleteVertices();
+
+      commandMode = 'drawVertex';
+    }
+
+    //toggle vertex data?
+    if (commandMode === 'vertexData') {
+      this.displayVertexData = !this.displayVertexData;
+      for (let i = 0; i < this.vertices.length; i++) {
+        this.vertices[i].displayVertexData = this.displayVertexData;
+      }
+      commandMode = prevCommandMode;
+      this.setState(this.state);
+    }
   }
 
   //------------Element Renderers---------------------//
@@ -253,7 +316,9 @@ class Sketchpad extends React.Component {
       displayVertexData: this.displayVertexData
     }
     this.vertices.push(vertex);
+    graphVertices = this.vertices;
     this.setState(this.state);
+    return vertex;
   }
 
   //when a vertex is clicked, it's assigned as the moving vertex.
@@ -288,70 +353,6 @@ class Sketchpad extends React.Component {
     }
     this.mousePrevPos = [mouseMoveCTX.clientX, mouseMoveCTX.clientY];
     this.movingVertex = vertex;
-  }
-
-  renameVertex = (vertex, event) =>{
-
-  }
-
-  update = () => {
-    //move Vertex
-    if (commandMode === 'grabber' && this.movingVertex) {
-      const dX = mouseMoveCTX.clientX - this.mousePrevPos[0];
-      const dY = mouseMoveCTX.clientY - this.mousePrevPos[1];
-
-      this.movingVertex.x += dX;
-      this.movingVertex.y += dY;
-
-      //take care of parallel edges
-      for (let i = 0; i < this.movingVertex.edges.length; i++) {
-        const edge = this.movingVertex.edges[i];
-        this.applyParallelEdges(edge.vertex1, edge.vertex2);
-      }
-
-      this.mousePrevPos = [mouseMoveCTX.clientX, mouseMoveCTX.clientY];
-      this.setState(this.state);
-    }
-
-    //was delete pressed?
-    if (commandMode === 'delete') {
-      //select all edges attached to vertices
-      for (let i = 0; i < this.selectedVertices.length; i++) {
-        const v = this.selectedVertices[i];
-        for (let j = 0; j < v.edges.length; j++) {
-          this.selectedEdges.push(v.edges[j]);
-        }
-      }
-
-      //delete all selected vertices and edges
-      this.deleteVertices();
-      this.deleteEdges();
-
-      //auto set mode to drawVertex after deletion
-      commandMode = prevCommandMode;
-    }
-
-    //was clear pad pressed?
-    if (commandMode === 'clearPad') {
-      //delete all
-      this.selectedVertices = this.vertices;
-      this.selectedEdges = this.edges;
-
-      this.deleteEdges();
-      this.deleteVertices();
-
-      commandMode = 'drawVertex';
-    }
-
-    //toggle vertex data?
-    if (commandMode === 'vertexData') {
-      this.displayVertexData = !this.displayVertexData;
-      for (let i = 0; i < this.vertices.length; i++) {
-        this.vertices[i].displayVertexData = this.displayVertexData;
-      }
-      commandMode = prevCommandMode;
-      this.setState(this.state);
-    }
   }
 
   //-------------------Edge Manipulation----------------//
@@ -396,6 +397,7 @@ class Sketchpad extends React.Component {
     this.applyParallelEdges(vertex1, vertex2);
 
     this.edges.push(edge);
+    graphEdges = this.edges;
     return edge;
   }
 
@@ -517,6 +519,7 @@ class Sketchpad extends React.Component {
       this.vertices = this.vertices.filter((vertex) => vertex.id !== this.selectedVertices[i].id);
     }
     this.selectedVertices = [];
+    graphVertices = this.vertices;
     this.setState(this.state);
   }
 
@@ -525,6 +528,7 @@ class Sketchpad extends React.Component {
       this.edges = this.edges.filter((edge) => edge.id !== this.selectedEdges[i].id);
     }
     this.selectedEdges = [];
+    graphEdges = this.edges;
     this.setState(this.state);
   }
 
