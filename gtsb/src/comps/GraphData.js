@@ -6,7 +6,6 @@ class GraphData extends React.Component {
     this.vertexCount=graphVertices.length;
     this.edgeCount=graphEdges.length;
     this.isBP=false;
-    this.componentCount=0;
     setInterval(this.update.bind(this), 33);
   }
 
@@ -14,6 +13,7 @@ class GraphData extends React.Component {
     const vertexCount='v = '+ graphVertices.length.toString();
     const edgeCount = 'e = '+graphEdges.length.toString();
     this.determineBipartite();
+    const components=this.findComponents();
 
     // eslint-disable-next-line no-undef
     return e(
@@ -49,7 +49,7 @@ class GraphData extends React.Component {
                 {
                   key: 'component_count'
                 },
-                'Components = '+this.componentCount
+                'Components = '+components.length
             )
         ]
     );
@@ -104,6 +104,32 @@ class GraphData extends React.Component {
 
   findUnseenVertices = (vistedVertices) => {
     return graphVertices.filter((vertex) => !vistedVertices.find((v) => v.id === vertex.id));
+  }
+
+  //returns an array of arrays for vertices that make up each component
+  findComponents = () => {
+    let components = [];
+    let visitedVertices = [];
+    //start at some vertex, collect all visited vertices
+    while (visitedVertices.length < graphVertices.length) {
+      let componentVertices = [];
+      const unseenVertices = this.findUnseenVertices(visitedVertices);
+      this.findComponentHelper(unseenVertices[0], visitedVertices, componentVertices);
+      components.push(componentVertices);
+    }
+    return components;
+  }
+
+  findComponentHelper = (currentVertex, visitedVertices, componentVertices) => {
+    if (visitedVertices.find((vertex) => vertex.id === currentVertex.id))
+      return;
+    componentVertices.push(currentVertex);
+    visitedVertices.push(currentVertex);
+    for (let i = 0; i < currentVertex.edges.length; i++) {
+      const edge = currentVertex.edges[i];
+      const adj = this.determineAdjVertex(currentVertex, edge.vertex1, edge.vertex2);
+      this.findComponentHelper(adj, visitedVertices, componentVertices);
+    }
   }
 }
 
