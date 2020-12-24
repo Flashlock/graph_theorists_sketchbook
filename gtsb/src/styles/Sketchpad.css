@@ -1,29 +1,50 @@
+:root{
+  --component-border: 4px solid black;
+  margin: 0px;
+  padding: 0px
+}
+
 #pad_wrapper{
-  display: grid;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
 }
 
+.component_header{
+  margin: 0px;
+  text-align: center;
+  flex: 1;
+}
+/*------------------Graph Data-----------------------*/
 #data_container{
-  grid-column-start: 1;
-  grid-row-start: 1;
-  grid-row-end: 1;
+  display: flex;
+  border: var(--component-border);
+  box-sizing: border-box;
+  padding: 10px;
+  border-radius: 25px;
+  flex-basis: 15%;
 }
 
+#graph_data_comp {
+  text-align: center;
+  flex: 1;
+}
+
+.graph_data{
+  flex: 1;
+  text-align: left;
+}
+
+/*------------------Sketchpad-----------------------*/
 #sketchpad_container{
-  grid-column-start: 2;
-  grid-row-start: 1;
-  grid-row-end: 1;
-}
-
-#command_container{
-  grid-column-start: 3;
-  grid-row-start: 1;
-  grid-row-end: 1;
+  flex-basis: 50%;
 }
 
 #sketchpad {
-  width: 1000px;
-  height: 500px;
   background: lightgray;
+  height: 200%;
+  border: var(--component-border);
 }
 
 .vertex_id {
@@ -50,3 +71,29 @@
   top: 50%;
   left: 35%;
 }
+
+/*------------------Commands-----------------------*/
+#command_container {
+  display: flex;
+  border: var(--component-border);
+  box-sizing: border-box;
+  padding: 10px;
+  flex-basis: 15%;
+  border-radius: 25px;
+}
+
+#commands{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#commands_comp{
+  text-align: center;
+  flex: 1;
+}
+
+.command_button{
+  font-size: medium;
+}
+

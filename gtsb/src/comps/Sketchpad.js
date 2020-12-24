@@ -4,7 +4,7 @@
 // eslint-disable-next-line no-undef
 const e = React.createElement;
 
-let commandMode = 'drawVertex';
+let commandMode = 'Draw Vertex';
 let prevCommandMode = commandMode;
 let mouseMoveCTX;
 document.getElementById('pad_wrapper').addEventListener('mousemove', (event)=> {
@@ -46,6 +46,12 @@ class Sketchpad extends React.Component {
     setInterval(this.update, 33);
   }
 
+  componentDidMount() {
+    this.sketchpad = document.getElementById('sketchpad');
+    const rect = this.sketchpad.getBoundingClientRect();
+    this.origin = [rect.left, rect.top];
+  }
+
   render() {
     return e(
         'div',
@@ -71,7 +77,7 @@ class Sketchpad extends React.Component {
 
   update = () => {
     //move Vertex
-    if (commandMode === 'grabber' && this.movingVertex) {
+    if (commandMode === 'Grabber' && this.movingVertex) {
       const dX = mouseMoveCTX.clientX - this.mousePrevPos[0];
       const dY = mouseMoveCTX.clientY - this.mousePrevPos[1];
 
@@ -89,7 +95,7 @@ class Sketchpad extends React.Component {
     }
 
     //was delete pressed?
-    if (commandMode === 'delete') {
+    if (commandMode === 'Delete') {
       //select all edges attached to vertices
       for (let i = 0; i < this.selectedVertices.length; i++) {
         const v = this.selectedVertices[i];
@@ -107,7 +113,7 @@ class Sketchpad extends React.Component {
     }
 
     //was clear pad pressed?
-    if (commandMode === 'clearPad') {
+    if (commandMode === 'Clear Pad') {
       //delete all
       this.selectedVertices = this.vertices;
       this.selectedEdges = this.edges;
@@ -115,11 +121,11 @@ class Sketchpad extends React.Component {
       this.deleteEdges();
       this.deleteVertices();
 
-      commandMode = 'drawVertex';
+      commandMode = 'Draw Vertex';
     }
 
     //toggle vertex data?
-    if (commandMode === 'vertexData') {
+    if (commandMode === 'Vertex Data') {
       this.displayVertexData = !this.displayVertexData;
       for (let i = 0; i < this.vertices.length; i++) {
         this.vertices[i].displayVertexData = this.displayVertexData;
@@ -306,12 +312,12 @@ class Sketchpad extends React.Component {
 
   //----------------Vertex Manipulation-------------------//
   drawVertex = (e) => {
-    if (!this.canDrawVertex || commandMode !== 'drawVertex')
+    if (!this.canDrawVertex || commandMode !== 'Draw Vertex')
       return;
     const vertex = {
       id: this.vertexIDCount++,
       x: e.clientX,
-      y: e.clientY,
+      y: e.clientY - this.origin[1]+this.vertexDiameter/2,
       edges: [],
       displayVertexData: this.displayVertexData
     }
@@ -326,7 +332,7 @@ class Sketchpad extends React.Component {
   assignVertex = (vertex) => {
     //start with the mode
     switch(commandMode){
-      case 'grabber':
+      case 'Grabber':
         if(vertex) {
           if (!vertex.isSelected)
             this.selectElement(true, vertex);
@@ -335,7 +341,7 @@ class Sketchpad extends React.Component {
           this.selectedVertices=this.deselectElement(this.selectedVertices, this.movingVertex);
         }
         break;
-      case 'manipulator':
+      case 'Selector':
         if(vertex) {
           if (vertex.isSelected)
             this.selectedVertices = this.deselectElement(this.selectedVertices, vertex);
@@ -343,8 +349,8 @@ class Sketchpad extends React.Component {
             this.selectElement(true, vertex);
         }
         break;
-      case 'drawEdge':
-      case 'drawArc':
+      case 'Draw Edge':
+      case 'Draw Arc':
         if(vertex)
           this.selectElement(true, vertex);
         break;
@@ -451,22 +457,22 @@ class Sketchpad extends React.Component {
   //---------------Selection/DeSelection----------------//
   selectElement = (isVertex, element) => {
     //can't select anything in vertex mode
-    if (commandMode === 'drawVertex')
+    if (commandMode === 'Draw Vertex')
       return;
 
     if (isVertex) {
       //attempt to draw an edge
-      if (commandMode !== 'manipulator') {
+      if (commandMode !== 'Selector') {
         //select the element
         element.isSelected = true;
         this.selectedVertices.push(element);
 
         if (this.selectedVertices.length === 2) {
           // check command mode => draw edge, arc
-          if (commandMode === 'drawEdge') {
+          if (commandMode === 'Draw Edge') {
             this.drawEdge(this.selectedVertices[0], this.selectedVertices[1]);
           } else
-            if (commandMode === 'drawArc') {
+            if (commandMode === 'Draw Arc') {
               const arc = this.drawEdge(this.selectedVertices[1], this.selectedVertices[0]);
               arc.isArc = true;
               arc.targetVertex = this.selectedVertices[1];
@@ -476,7 +482,7 @@ class Sketchpad extends React.Component {
           this.selectedVertices = this.deselectElements(this.selectedVertices);
         }
       }
-      //selection and deselection with manipulator
+      //selection and deselection with selector
       else {
         if (element.isSelected) {
           this.deselectElement(this.selectedVertices, element);
@@ -486,7 +492,7 @@ class Sketchpad extends React.Component {
         }
       }
     } else
-      if (commandMode === 'manipulator') {
+      if (commandMode === 'Selector') {
         //should I deselect the edge?
         if (element.isSelected) {
           this.selectedEdges = this.deselectElement(this.selectedEdges, element);

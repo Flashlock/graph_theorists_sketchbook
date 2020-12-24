@@ -19,35 +19,47 @@ class GraphData extends React.Component {
     return e(
         'div',
         {
-          key: 'graph_data'
+          key: 'graph_data_comp',
+          id: 'graph_data_comp'
         },
-        'Graph Data',
         [
             e(
                 'h1',
                 {
-                  key: 'vertex_count'
+                  key: 'graph_data_header',
+                  className: 'component_header'
+                },
+                'Graph Data'
+            ),
+            e(
+                'h3',
+                {
+                  key: 'vertex_count',
+                  className: 'graph_data'
                 },
                 vertexCount
             ),
             e(
-                'h1',
+                'h3',
                 {
-                  key: 'edge_count'
+                  key: 'edge_count',
+                  className: 'graph_data'
                 },
                 edgeCount
             ),
             e(
-                'h1',
+                'h3',
                 {
-                  key: 'is_bp'
+                  key: 'is_bp',
+                  className: 'graph_data'
                 },
                 'BP = '+this.isBP
             ),
             e(
-                'h1',
+                'h3',
                 {
-                  key: 'component_count'
+                  key: 'component_count',
+                  className: 'graph_data'
                 },
                 'Components = '+components.length
             )
