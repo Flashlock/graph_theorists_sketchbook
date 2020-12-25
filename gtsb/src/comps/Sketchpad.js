@@ -35,6 +35,7 @@ class Sketchpad extends React.Component {
     this.edges = [];
     this.selectedVertices = [];
     this.selectedEdges = [];
+    this.bridges=[];
     //ID Counts
     this.vertexIDCount = 0;
     this.edgeIDCount = 0;
@@ -200,23 +201,31 @@ class Sketchpad extends React.Component {
   }
 
   EdgeRenderer = (edge) => {
-    if(edge.isLoop){
+    if (edge.isLoop) {
       return this.LoopRenderer(edge);
     }
 
     this.positionEdge(edge);
+    let border = null;
+    if (edge.isSelected) {
+      border = this.selectionBorderRadius + 'px solid pink';
+    } else
+      if (false) {
+        console.log("HERE");
+        border = this.selectionBorderRadius + 'px solid red';
+      }
     const style = {
       position: 'absolute',
       top: edge.isSelected ? edge.y - this.selectionBorderRadius : edge.y,
       left: edge.isSelected ? edge.x - this.selectionBorderRadius : edge.x,
       background: edge.isHovering ? 'pink' : 'black',
-      border: edge.isSelected ? this.selectionBorderRadius + 'px solid pink' : null,
+      border: border,
       width: this.edgeWidth,
       height: edge.height,
       transform: 'rotate(' + edge.theta.toString() + 'rad)',
     }
     const id = 'e' + edge.id.toString();
-    if(edge.isArc){
+    if (edge.isArc) {
       return this.ArcRenderer(edge, id, style);
     }
 

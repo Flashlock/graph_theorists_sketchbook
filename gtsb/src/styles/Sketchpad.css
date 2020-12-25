@@ -15,6 +15,7 @@
   margin: 0px;
   text-align: center;
   flex: 1;
+  text-decoration: underline;
 }
 /*------------------Graph Data-----------------------*/
 #data_container{
@@ -43,7 +44,7 @@
 
 #sketchpad {
   background: lightgray;
-  height: 200%;
+  height: 100%;
   border: var(--component-border);
 }
 
@@ -82,18 +83,73 @@
   border-radius: 25px;
 }
 
-#commands{
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
 #commands_comp{
   text-align: center;
   flex: 1;
 }
 
+#commands_and_colors{
+  display: flex;
+}
+
+#commands{
+  width: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
 .command_button{
   font-size: medium;
+  margin: 10px;
+}
+
+#colors{
+  margin-left: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#color_picker{
+  box-sizing: border-box;
+  width: 150px;
+  height: 50px;
+}
+
+#default_color_palette_wrapper{
+  display: grid;
+  width: 150px;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  grid-gap: 5px;
+}
+
+.default_color_palette{
+  height: 30px;
+  border: 2px solid black;
+  border-radius: 5px;
+}
+
+#custom_color_palette_wrapper{
+  display: grid;
+  width: 150px;
+  align-items: center;
+  justify-items: center;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-row-gap: 15px;
+  grid-column-gap: 2px;
+  margin-bottom: 1em;
+}
+
+.custom_color_palette{
+  height: 25px;
+  width: 25px;
+  border: 2px solid black;
+  border-radius: 5px;
+}
+
+.color_header{
+  margin-bottom: -5px;
 }
 
