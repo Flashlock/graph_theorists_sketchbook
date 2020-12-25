@@ -230,7 +230,22 @@ class CommandContainer extends React.Component {
                     ]
                 )
               ]
-          )
+          ),
+            e(
+                'h3',
+                {
+                  key: 'arrow_color_header',
+                  //probably put something
+                },
+                'Arrow Color Picker'
+            ),
+            e(
+                'input',
+                {
+                  key: 'arrow_color_picker',
+                  type: 'color'
+                }
+            )
         ]
     );
   }
