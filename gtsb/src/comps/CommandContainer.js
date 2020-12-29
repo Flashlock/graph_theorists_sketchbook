@@ -5,13 +5,12 @@ class CommandContainer extends React.Component {
     super(props);
     this.state = {};
     this.commandMode = 'Draw Vertex';
-    this.nonComands = ['Clear Pad', 'Delete', 'Vertex Data, Bridges'];
+    this.nonComands = ['Clear Pad', 'Delete'];
     this.customColors = []
-    for (let i = 0; i < 16; i++) {
+    for (let i = 0; i < 15; i++) {
       this.customColors.push('white');
     }
     this.defaultColors = ['red', 'blue', 'yellow'];
-    this.idBridge = false;
 
     setInterval(this.update.bind(this), 33);
   }
@@ -21,8 +20,6 @@ class CommandContainer extends React.Component {
   }
 
   render() {
-    this.customColorCount = 0;
-    this.defaultColorCount = 0;
     // eslint-disable-next-line no-undef
     return e(
         'div',
@@ -89,6 +86,18 @@ class CommandContainer extends React.Component {
                           },
                           'Draw Arc'
                       ),
+                      //selector Button
+                      // eslint-disable-next-line no-undef
+                      e(
+                          'button',
+                          {
+                            onClick: this.toggleCommandMode.bind(this, 'Selector'),
+                            className: 'command_button',
+                            id: 'selector',
+                            key: 'selector'
+                          },
+                          'Selector'
+                      ),
                       //Grabber Button
                       // eslint-disable-next-line no-undef
                       e(
@@ -125,40 +134,6 @@ class CommandContainer extends React.Component {
                           },
                           'Clear Pad'
                       ),
-                      //selector Button
-                      // eslint-disable-next-line no-undef
-                      e(
-                          'button',
-                          {
-                            onClick: this.toggleCommandMode.bind(this, 'Selector'),
-                            className: 'command_button',
-                            id: 'selector',
-                            key: 'selector'
-                          },
-                          'Selector'
-                      ),
-                      // Display vertex data
-                      // eslint-disable-next-line no-undef
-                      e(
-                          'button',
-                          {
-                            onClick: this.toggleCommandMode.bind(this, 'Vertex Data'),
-                            className: 'command_button',
-                            id: 'vertexData',
-                            key: 'vertexData'
-                          },
-                          'Vertex Data'
-                      ),
-                      e(
-                          'button',
-                          {
-                            onClick: this.toggleBridgeID.bind(this),
-                            className: 'command_button',
-                            id: 'bridgeID',
-                            key: 'bridgeID'
-                          },
-                          'Locate Bridges'
-                      )
                     ]
                 ),
                 e(
@@ -168,83 +143,77 @@ class CommandContainer extends React.Component {
                       id: 'colors'
                     },
                     [
-                      e(
-                          'h3',
-                          {
-                            key: 'color_picker_header',
-                            id: 'color_picker_header',
-                            className: 'color_header'
-                          },
-                          'Color Picker'
-                      ),
-                      e(
-                          'input',
-                          {
-                            type: 'color',
-                            key: 'color_picker',
-                            id: 'color_picker'
-                          }
-                      ),
-                      e(
-                          'h3',
-                          {
-                            key: 'default_palette_header',
-                            id: 'default_palette_header',
-                            className: 'color_header'
-                          },
-                          'Default Palette'
-                      ),
-                      e(
-                          'div',
-                          {
-                            key: 'default_color_palette_wrapper',
-                            id: 'default_color_palette_wrapper'
-                          },
-                          [
-                            this.defaultColors.map((color) => {
-                              return this.DefaultColorRenderer(color);
-                            })
-                          ]
-                      ),
-                      e(
-                          'h3',
-                          {
-                            key: 'custom_palette_header',
-                            id: 'custom_palette_header',
-                            className: 'color_header'
-                          },
-                          'Custom Palette'
-                      ),
-                      e(
-                          'div',
-                          {
-                            key: 'custom_color_palette_wrapper',
-                            id: 'custom_color_palette_wrapper'
-                          },
-                          [
-                            this.customColors.map((color) => {
-                              return this.CustomColorRenderer(color);
-                            })
-                          ]
-                      )
+                        //color picker header
+                        e(
+                            'h3',
+                            {
+                              key: 'color_picker_header',
+                              className: 'color_header'
+                            },
+                            'Color Picker'
+                        ),
+                        //color picker
+                        e(
+                            'input',
+                            {
+                              key: 'color_picker',
+                              className: 'color_picker',
+                              type: 'color'
+                            }
+                        ),
+                        //default color palette header
+                        e(
+                            'h3',
+                            {
+                              key: 'default_palette_header',
+                              className: 'color_header'
+                            },
+                            'Default Palette'
+                        ),
+                        //default color palette
+                        this.defaultColors.map((color)=>{
+                          return this.ColorRenderer(color);
+                        }),
+                        //custom color palette header
+                        e(
+                            'h3',
+                            {
+                              key: 'custom_palette_header',
+                              className: 'color_header'
+                            },
+                            'Custom Palette'
+                        ),
+                        //custom color palette
+                        this.customColors.map((color) =>{
+                          return this.ColorRenderer(color);
+                        })
                     ]
                 )
               ]
           ),
             e(
-                'h3',
+                'div',
                 {
-                  key: 'arrow_color_header',
-                  //probably put something
+                  key: 'arrow_color',
+                  id: 'arrow_color'
                 },
-                'Arrow Color Picker'
-            ),
-            e(
-                'input',
-                {
-                  key: 'arrow_color_picker',
-                  type: 'color'
-                }
+                [
+                  e(
+                      'h3',
+                      {
+                        key: 'arrow_color_header'
+                      },
+                      'Arrow Color Picker'
+                  ),
+                  e(
+                      'input',
+                      {
+                        key: 'arrow_color_picker',
+                        type: 'color',
+                        className: 'color_picker'
+                      }
+                  )
+                ]
             )
         ]
     );
@@ -255,14 +224,9 @@ class CommandContainer extends React.Component {
       this.commandMode = commandMode;
       this.setState(this.state);
     }
-    if (this.idBridge && graphEdges.length !== this.edges.length) {
-      this.edges = graphEdges;
-      this.idBridges();
-      this.setState(this.state);
-    }
   }
 
-  DefaultColorRenderer = (color) => {
+  ColorRenderer = (color) => {
     const style = {
       background: color
     }
@@ -270,21 +234,7 @@ class CommandContainer extends React.Component {
         'div',
         {
           key: 'd' + this.defaultColorCount++,
-          className: 'default_color_palette',
-          style: style
-        }
-    )
-  }
-
-  CustomColorRenderer = (color) => {
-    const style = {
-      background: color
-    }
-    return e(
-        'div',
-        {
-          key: 'c' + this.customColorCount++,
-          className: 'custom_color_palette',
+          className: 'color_palette',
           style: style
         }
     )
@@ -295,74 +245,7 @@ class CommandContainer extends React.Component {
     prevCommandMode = commandMode;
     // eslint-disable-next-line no-undef
     commandMode = command;
-    if (command === 'Bridges')
-      this.toggleBridgeID();
     this.setState(this.state);
-  }
-
-  toggleBridgeID = () => {
-    this.idBridge = !this.idBridge
-    if (!this.idBridge) {
-      //turn off bridges
-      bridges = [];
-    } else {
-      //turn on bridges
-      this.idBridges();
-    }
-    this.setState(this.state);
-  }
-
-  idBridges() {
-    bridges = [];
-    for (let i = 0; i < graphEdges.length; i++) {
-      if (graphEdges[i].isLoop)
-        continue;
-      let vertex1 = graphEdges[i].vertex1;
-      let vertex2 = graphEdges[i].vertex2;
-      //if it's an arc, need to find the direction
-      if (graphEdges[i].isArc) {
-        vertex1 = this.determineAdjVertex(graphEdges[i].targetVertex, vertex1, vertex2);
-        vertex2 = graphEdges[i].targetVertex;
-      }
-      let path = [];
-
-      //remove the edge from its vertices
-      vertex1.edges = vertex1.edges.filter((edge) => edge.id !== graphEdges[i].id);
-      vertex2.edges = vertex2.edges.filter((edge) => edge.id !== graphEdges[i].id);
-
-      this.pathFound = false;
-      this.pathFinder(vertex1, vertex2, path);
-      if (!this.pathFound)
-        bridges.push(graphEdges[i].id);
-
-      //add the edge back in
-      vertex1.edges.push(graphEdges[i]);
-      vertex2.edges.push(graphEdges[i]);
-    }
-  }
-
-  pathFinder(currentVertex, targetVertex, path) {
-    if (path.find((vertex) => vertex.id === currentVertex.id) || this.pathFound)
-      return;
-
-    //if not seen before, is this the goal?
-    if (currentVertex.id === targetVertex.id) {
-      this.pathFound = true;
-      return;
-    }
-
-    path.push(currentVertex);
-    for (let i = 0; i < currentVertex.edges.length; i++) {
-      const edge = currentVertex.edges[i];
-      if (!edge.isArc || (edge.isArc && edge.targetVertex.id !== currentVertex.id)) {
-        const adj = this.determineAdjVertex(currentVertex, edge.vertex1, edge.vertex2);
-        this.pathFinder(adj, targetVertex, path);
-      }
-    }
-  }
-
-  determineAdjVertex(currentVertex, v1, v2) {
-    return v1.id === currentVertex.id ? v2 : v1;
   }
 }
 

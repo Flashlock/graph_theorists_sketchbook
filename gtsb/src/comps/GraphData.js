@@ -32,6 +32,46 @@ class GraphData extends React.Component {
                 'Graph Data'
             ),
             e(
+                'div',
+                {
+                  key: 'data_toggles',
+                  id: 'data_toggles'
+                },
+                [
+                  // Display vertex data
+                  // eslint-disable-next-line no-undef
+                  e(
+                      'button',
+                      {
+                        // onClick: this.toggleCommandMode.bind(this, 'Vertex Data'),
+                        className: 'command_button',
+                        id: 'vertex_data',
+                        key: 'vertex_data'
+                      },
+                      'Vertex Data'
+                  ),
+                    e(
+                        'button',
+                        {
+                          className: 'command_button',
+                          id: 'reset_id',
+                          key: 'reset_id'
+                        },
+                        'Reset IDs'
+                    ),
+                  e(
+                      'button',
+                      {
+                        // onClick: this.toggleBridgeID.bind(this),
+                        className: 'command_button',
+                        id: 'bridge_ID',
+                        key: 'bridge_ID'
+                      },
+                      'Locate Bridges'
+                  )
+                ]
+            ),
+            e(
                 'h3',
                 {
                   key: 'vertex_count',

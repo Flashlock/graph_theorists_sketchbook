@@ -24,7 +24,7 @@
   box-sizing: border-box;
   padding: 10px;
   border-radius: 25px;
-  flex-basis: 15%;
+  flex-basis: 16%;
 }
 
 #graph_data_comp {
@@ -35,6 +35,11 @@
 .graph_data{
   flex: 1;
   text-align: left;
+}
+
+#data_toggles{
+  display: flex;
+  justify-content: space-between;
 }
 
 /*------------------Sketchpad-----------------------*/
@@ -79,7 +84,7 @@
   border: var(--component-border);
   box-sizing: border-box;
   padding: 10px;
-  flex-basis: 15%;
+  flex-basis: 16%;
   border-radius: 25px;
 }
 
@@ -90,10 +95,10 @@
 
 #commands_and_colors{
   display: flex;
+  justify-content: space-between;
 }
 
 #commands{
-  width: 100px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -105,51 +110,35 @@
 }
 
 #colors{
-  margin-left: 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-#color_picker{
-  box-sizing: border-box;
-  width: 150px;
-  height: 50px;
-}
-
-#default_color_palette_wrapper{
   display: grid;
-  width: 150px;
   grid-template-columns: 1fr 1fr 1fr;
-  align-items: center;
-  grid-gap: 5px;
-}
-
-.default_color_palette{
-  height: 30px;
-  border: 2px solid black;
-  border-radius: 5px;
-}
-
-#custom_color_palette_wrapper{
-  display: grid;
-  width: 150px;
-  align-items: center;
   justify-items: center;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-row-gap: 15px;
-  grid-column-gap: 2px;
-  margin-bottom: 1em;
-}
-
-.custom_color_palette{
-  height: 25px;
-  width: 25px;
-  border: 2px solid black;
-  border-radius: 5px;
+  grid-column-gap: 10%;
+  margin-top: 5%;
+  margin-left: 5%;
+  margin-right: 5%;
 }
 
 .color_header{
-  margin-bottom: -5px;
+  grid-column: 1/4;
+  text-align: center;
+  margin: 0 0 -5%;
 }
 
+.color_picker{
+  grid-column: 1/4;
+  width: 100%;
+}
+
+.color_palette{
+  width: 100%;
+  height: 50%;
+  border-radius: 9999px;
+  border: 2px solid black;
+}
+
+#arrow_color{
+  margin-left: 5%;
+  margin-right: 5%;
+  margin-bottom: 5%;
+}
