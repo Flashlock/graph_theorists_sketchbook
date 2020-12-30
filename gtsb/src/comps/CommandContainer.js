@@ -192,7 +192,17 @@ class CommandContainer extends React.Component {
                       //custom color palette
                       this.customColors.map((color) => {
                         return this.ColorRenderer(color);
-                      })
+                      }),
+                        //selected color hex code
+                        e(
+                            'h3',
+                            {
+                              key: 'palette_hex_code',
+                              className: 'color_header',
+                              id: 'palette_hex_code'
+                            },
+                            selectedColor? selectedColor.color: '#------'
+                        )
                     ]
                 )
               ]
