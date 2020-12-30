@@ -5,6 +5,8 @@
 const e = React.createElement;
 
 let commandMode = 'Draw Vertex';
+// eslint-disable-next-line no-unused-vars
+const nonCommands = ['Clear Pad', 'Delete', 'Display Vertex Data', 'Reset IDs', 'Bridge ID'];
 let prevCommandMode = commandMode;
 let mouseMoveCTX;
 document.getElementById('pad_wrapper').addEventListener('mousemove', (event)=> {
@@ -37,7 +39,8 @@ class Sketchpad extends React.Component {
     this.edgeIDCount = 0;
     //switches
     this.canDrawVertex = true;
-    this.displayVertexData=false;
+    this.displayVertexData = false;
+    this.bridgeID=false;
 
     //33 ms = ~30fps
     setInterval(this.update, 33);
@@ -122,13 +125,42 @@ class Sketchpad extends React.Component {
       commandMode = 'Draw Vertex';
     }
 
-    //toggle vertex data?
-    if (commandMode === 'Vertex Data') {
+    //vertex data display?
+    if (commandMode === 'Display Vertex Data') {
       this.displayVertexData = !this.displayVertexData;
       for (let i = 0; i < graphVertices.length; i++) {
         graphVertices[i].displayVertexData = this.displayVertexData;
       }
       commandMode = prevCommandMode;
+      this.setState(this.state);
+    }
+
+    //rest ids?
+    if (commandMode === 'Reset IDs') {
+      commandMode = prevCommandMode;
+      this.vertexIDCount = graphVertices.length;
+      this.edgeIDCount = graphEdges.length;
+      for (let i = 0; i < graphVertices.length; i++) {
+        graphVertices[i].id = i;
+      }
+      for (let i = 0; i < graphEdges.length; i++) {
+        graphEdges[i].id = i;
+      }
+      this.setState(this.state);
+    }
+
+    //locate bridges?
+    if (commandMode === 'Bridge ID') {
+      commandMode = prevCommandMode;
+      this.bridgeID = !this.bridgeID;
+      if (this.bridgeID) {
+        this.locateBridges();
+      } else {
+        //toggle all bridges off
+        for (let i = 0; i < graphEdges.length; i++) {
+          graphEdges[i].isBridge = false;
+        }
+      }
       this.setState(this.state);
     }
   }
@@ -207,14 +239,13 @@ class Sketchpad extends React.Component {
     if (edge.isSelected) {
       border = this.selectionBorderRadius + 'px solid pink';
     } else
-      if (false) {
-        console.log("HERE");
+      if (edge.isBridge) {
         border = this.selectionBorderRadius + 'px solid red';
       }
     const style = {
       position: 'absolute',
-      top: edge.isSelected ? edge.y - this.selectionBorderRadius : edge.y,
-      left: edge.isSelected ? edge.x - this.selectionBorderRadius : edge.x,
+      top: edge.isSelected || edge.isBridge ? edge.y - this.selectionBorderRadius : edge.y,
+      left: edge.isSelected || edge.isBridge ? edge.x - this.selectionBorderRadius : edge.x,
       background: edge.isHovering ? 'pink' : 'black',
       border: border,
       width: this.edgeWidth,
@@ -402,12 +433,16 @@ class Sketchpad extends React.Component {
       isLoop: vertex1.id === vertex2.id
     }
     vertex1.edges.push(edge);
-    if (!edge.isLoop)
-      vertex2.edges.push(edge);
-
-    this.applyParallelEdges(vertex1, vertex2);
-
     graphEdges.push(edge);
+
+    if (!edge.isLoop) {
+      vertex2.edges.push(edge);
+    }
+    if (this.bridgeID) {
+      //if I'm looking for bridges, did I just draw one?
+      this.locateBridges();
+    }
+    this.applyParallelEdges(vertex1, vertex2);
     return edge;
   }
 
@@ -455,6 +490,63 @@ class Sketchpad extends React.Component {
 
         distance *= -1;
       }
+    }
+  }
+
+  locateBridges() {
+    for (let i = 0; i < graphEdges.length; i++) {
+      graphEdges[i].isBridge = this.isBridge(graphEdges[i]);
+    }
+  }
+
+  isBridge = (edge) => {
+    if (edge.isLoop) return false;
+    //remove the edge
+    const edgeIndex = graphEdges.findIndex((e) => e.id === edge.id);
+    graphEdges = graphEdges.filter((e) => e.id !== edge.id);
+    edge.vertex1.edges = edge.vertex1.edges.filter((e) => e.id !== edge.id);
+    edge.vertex2.edges = edge.vertex2.edges.filter((e) => e.id !== edge.id);
+    //find the path
+    const path = this.pathFinder(edge.vertex1, edge.vertex2);
+    //put the edge back
+    graphEdges.splice(edgeIndex, 0, edge);
+    edge.vertex1.edges.push(edge);
+    edge.vertex2.edges.push(edge);
+    return path.length === 0;
+  }
+
+  pathFinder(start, finish) {
+    //returns the shortest list of vertices connecting start to finish
+    let paths = [];
+    this.pathFinderHelper(start, [], paths, finish);
+
+    //return the shortest path in paths
+    if (paths.length === 0) return paths;
+    let shortestPath = paths[0];
+    for (let i = 0; i < paths.length; i++) {
+      if (paths[i].length < shortestPath.length) {
+        shortestPath = paths[i];
+      }
+    }
+    return shortestPath;
+  }
+
+  pathFinderHelper(currentVertex, path, paths, finish){
+    path.push(currentVertex);
+    if(currentVertex.id===finish.id){
+      paths.push(path);
+      return;
+    }
+    for(let i=0;i<currentVertex.edges.length;i++){
+      if(!path.find(v=>v.id===currentVertex.edges[i].vertex1.id)){
+        //continue search on vertex1
+        this.pathFinderHelper(currentVertex.edges[i].vertex1, path, paths, finish);
+      }
+      else if(!path.find(v=>v.id===currentVertex.edges[i].vertex2.id)){
+        //continue search on vertex2
+        this.pathFinderHelper(currentVertex.edges[i].vertex2, path, paths, finish);
+      }
+      //else do nothing for this edge
     }
   }
 

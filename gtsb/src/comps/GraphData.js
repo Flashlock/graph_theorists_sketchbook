@@ -10,10 +10,10 @@ class GraphData extends React.Component {
   }
 
   render() {
-    const vertexCount='v = '+ graphVertices.length.toString();
-    const edgeCount = 'e = '+graphEdges.length.toString();
+    const vertexCount = 'v = ' + graphVertices.length.toString();
+    const edgeCount = 'e = ' + graphEdges.length.toString();
     this.determineBipartite();
-    const components=this.findComponents();
+    const components = this.findComponents();
 
     // eslint-disable-next-line no-undef
     return e(
@@ -23,86 +23,87 @@ class GraphData extends React.Component {
           id: 'graph_data_comp'
         },
         [
-            e(
-                'h1',
-                {
-                  key: 'graph_data_header',
-                  className: 'component_header'
-                },
-                'Graph Data'
-            ),
-            e(
-                'div',
-                {
-                  key: 'data_toggles',
-                  id: 'data_toggles'
-                },
-                [
-                  // Display vertex data
-                  // eslint-disable-next-line no-undef
-                  e(
-                      'button',
-                      {
-                        // onClick: this.toggleCommandMode.bind(this, 'Vertex Data'),
-                        className: 'command_button',
-                        id: 'vertex_data',
-                        key: 'vertex_data'
-                      },
-                      'Vertex Data'
-                  ),
-                    e(
-                        'button',
-                        {
-                          className: 'command_button',
-                          id: 'reset_id',
-                          key: 'reset_id'
-                        },
-                        'Reset IDs'
-                    ),
-                  e(
-                      'button',
-                      {
-                        // onClick: this.toggleBridgeID.bind(this),
-                        className: 'command_button',
-                        id: 'bridge_ID',
-                        key: 'bridge_ID'
-                      },
-                      'Locate Bridges'
-                  )
-                ]
-            ),
-            e(
-                'h3',
-                {
-                  key: 'vertex_count',
-                  className: 'graph_data'
-                },
-                vertexCount
-            ),
-            e(
-                'h3',
-                {
-                  key: 'edge_count',
-                  className: 'graph_data'
-                },
-                edgeCount
-            ),
-            e(
-                'h3',
-                {
-                  key: 'is_bp',
-                  className: 'graph_data'
-                },
-                'BP = '+this.isBP
-            ),
-            e(
-                'h3',
-                {
-                  key: 'component_count',
-                  className: 'graph_data'
-                },
-                'Components = '+components.length
-            )
+          e(
+              'h1',
+              {
+                key: 'graph_data_header',
+                className: 'component_header'
+              },
+              'Graph Data'
+          ),
+          e(
+              'div',
+              {
+                key: 'data_toggles',
+                id: 'data_toggles'
+              },
+              [
+                // Display vertex data
+                // eslint-disable-next-line no-undef
+                e(
+                    'button',
+                    {
+                      onClick: this.toggleCommand.bind(this, 'Display Vertex Data'),
+                      className: 'command_button',
+                      id: 'vertex_data',
+                      key: 'vertex_data'
+                    },
+                    'Vertex Data'
+                ),
+                e(
+                    'button',
+                    {
+                      onClick: this.toggleCommand.bind(this, 'Reset IDs'),
+                      className: 'command_button',
+                      id: 'reset_id',
+                      key: 'reset_id'
+                    },
+                    'Reset IDs'
+                ),
+                e(
+                    'button',
+                    {
+                      onClick: this.toggleCommand.bind(this, 'Bridge ID'),
+                      className: 'command_button',
+                      id: 'bridge_ID',
+                      key: 'bridge_ID'
+                    },
+                    'Locate Bridges'
+                )
+              ]
+          ),
+          e(
+              'h3',
+              {
+                key: 'vertex_count',
+                className: 'graph_data'
+              },
+              vertexCount
+          ),
+          e(
+              'h3',
+              {
+                key: 'edge_count',
+                className: 'graph_data'
+              },
+              edgeCount
+          ),
+          e(
+              'h3',
+              {
+                key: 'is_bp',
+                className: 'graph_data'
+              },
+              'BP = ' + this.isBP
+          ),
+          e(
+              'h3',
+              {
+                key: 'component_count',
+                className: 'graph_data'
+              },
+              'Components = ' + components.length
+          )
         ]
     );
   }
@@ -126,25 +127,24 @@ class GraphData extends React.Component {
     }
   }
 
-  bpHelper = (currentVertex, visitedVertices, mColor) =>{
+  bpHelper = (currentVertex, visitedVertices, mColor) => {
     //if I've been here before, I must be trying to color it the same else bad
-    if(visitedVertices.find((vertex)=>vertex.id===currentVertex.id)){
-      if(currentVertex.mColor===mColor){
+    if (visitedVertices.find((vertex) => vertex.id === currentVertex.id)) {
+      if (currentVertex.mColor === mColor) {
         return;
-      }
-      else{
-        this.isBP=false;
+      } else {
+        this.isBP = false;
         return;
       }
     }
 
     visitedVertices.push(currentVertex);
-    currentVertex.mColor=mColor;
-    mColor=mColor===1?0:1;
+    currentVertex.mColor = mColor;
+    mColor = mColor === 1 ? 0 : 1;
 
-    for(let i=0;i<currentVertex.edges.length;i++){
-      const edge=currentVertex.edges[i];
-      const adj=this.determineAdjVertex(currentVertex, edge.vertex1, edge.vertex2);
+    for (let i = 0; i < currentVertex.edges.length; i++) {
+      const edge = currentVertex.edges[i];
+      const adj = this.determineAdjVertex(currentVertex, edge.vertex1, edge.vertex2);
       this.bpHelper(adj, visitedVertices, mColor);
     }
 
@@ -182,6 +182,12 @@ class GraphData extends React.Component {
       const adj = this.determineAdjVertex(currentVertex, edge.vertex1, edge.vertex2);
       this.findComponentHelper(adj, visitedVertices, componentVertices);
     }
+  }
+
+  toggleCommand = (command) => {
+    prevCommandMode = commandMode;
+    commandMode = command
+    this.setState(this.state);
   }
 }
 

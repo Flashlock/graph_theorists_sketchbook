@@ -1,11 +1,9 @@
-let bridges=[];
 // eslint-disable-next-line no-undef
 class CommandContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
     this.commandMode = 'Draw Vertex';
-    this.nonComands = ['Clear Pad', 'Delete'];
     this.customColors = []
     for (let i = 0; i < 15; i++) {
       this.customColors.push('white');
@@ -20,6 +18,7 @@ class CommandContainer extends React.Component {
   }
 
   render() {
+    this.colorCount=0;
     // eslint-disable-next-line no-undef
     return e(
         'div',
@@ -220,7 +219,7 @@ class CommandContainer extends React.Component {
   }
 
   update() {
-    if (this.commandMode !== commandMode && !this.nonComands.find((command) => command === commandMode)) {
+    if (this.commandMode !== commandMode && !nonCommands.find((command) => command === commandMode)) {
       this.commandMode = commandMode;
       this.setState(this.state);
     }
@@ -233,7 +232,7 @@ class CommandContainer extends React.Component {
     return e(
         'div',
         {
-          key: 'd' + this.defaultColorCount++,
+          key: 'd' + this.colorCount++,
           className: 'color_palette',
           style: style
         }
