@@ -15,7 +15,6 @@ class CommandContainer extends React.Component {
     }
     this.defaultColors = [{ color: 'red', id: 0, palette: 'default' }, { color: 'blue', id: 1, palette: 'default' },
       { color: 'yellow', id: 2, palette: 'default' }];
-    selectedColor = this.defaultColors[1];
 
     setInterval(this.update.bind(this), 33);
   }
@@ -148,78 +147,80 @@ class CommandContainer extends React.Component {
                       id: 'colors'
                     },
                     [
-                        //color picker header
-                        e(
-                            'h3',
-                            {
-                              key: 'color_picker_header',
-                              className: 'color_header'
-                            },
-                            'Color Picker'
-                        ),
-                        //color picker
-                        e(
-                            'input',
-                            {
-                              key: 'color_picker',
-                              className: 'color_picker',
-                              type: 'color'
-                            }
-                        ),
-                        //default color palette header
-                        e(
-                            'h3',
-                            {
-                              key: 'default_palette_header',
-                              className: 'color_header'
-                            },
-                            'Default Palette'
-                        ),
-                        //default color palette
-                        this.defaultColors.map((color)=>{
-                          return this.ColorRenderer(color);
-                        }),
-                        //custom color palette header
-                        e(
-                            'h3',
-                            {
-                              key: 'custom_palette_header',
-                              className: 'color_header'
-                            },
-                            'Custom Palette'
-                        ),
-                        //custom color palette
-                        this.customColors.map((color) =>{
-                          return this.ColorRenderer(color);
-                        })
+                      //color picker header
+                      e(
+                          'h3',
+                          {
+                            key: 'color_picker_header',
+                            className: 'color_header'
+                          },
+                          'Color Picker'
+                      ),
+                      //color picker
+                      e(
+                          'input',
+                          {
+                            key: 'color_picker',
+                            className: 'color_picker',
+                            id: 'custom_picker',
+                            type: 'color',
+                            onChange: this.changeColor
+                          }
+                      ),
+                      //default color palette header
+                      e(
+                          'h3',
+                          {
+                            key: 'default_palette_header',
+                            className: 'color_header'
+                          },
+                          'Default Palette'
+                      ),
+                      //default color palette
+                      this.defaultColors.map((color) => {
+                        return this.ColorRenderer(color);
+                      }),
+                      //custom color palette header
+                      e(
+                          'h3',
+                          {
+                            key: 'custom_palette_header',
+                            className: 'color_header'
+                          },
+                          'Custom Palette'
+                      ),
+                      //custom color palette
+                      this.customColors.map((color) => {
+                        return this.ColorRenderer(color);
+                      })
                     ]
                 )
               ]
           ),
-            e(
-                'div',
-                {
-                  key: 'arrow_color',
-                  id: 'arrow_color'
-                },
-                [
-                  e(
-                      'h3',
-                      {
-                        key: 'arrow_color_header'
-                      },
-                      'Arrow Color Picker'
-                  ),
-                  e(
-                      'input',
-                      {
-                        key: 'arrow_color_picker',
-                        type: 'color',
-                        className: 'color_picker'
-                      }
-                  )
-                ]
-            )
+          e(
+              'div',
+              {
+                key: 'arrow_color',
+                id: 'arrow_color'
+              },
+              [
+                e(
+                    'h3',
+                    {
+                      key: 'arrow_color_header'
+                    },
+                    'Arrow Color Picker'
+                ),
+                e(
+                    'input',
+                    {
+                      key: 'arrow_color_picker',
+                      type: 'color',
+                      className: 'color_picker'
+                    }
+                )
+              ]
+          )
         ]
     );
   }
@@ -232,8 +233,10 @@ class CommandContainer extends React.Component {
   }
 
   ColorRenderer = (color) => {
+    const isSelected = selectedColor && selectedColor.palette === color.palette && selectedColor.id === color.id;
     const style = {
-      background: color.color
+      background: color.color,
+      border: isSelected ? '2px solid pink' : '2px solid black'
     }
     return e(
         'div',
@@ -247,7 +250,12 @@ class CommandContainer extends React.Component {
   }
 
   selectColor(color) {
-    selectedColor = color;
+    //second click deselects the color
+    if (selectedColor && selectedColor.palette === color.palette && selectedColor.id === color.id) {
+      selectedColor = null;
+    } else
+      selectedColor = color;
+    this.setState(this.state);
   }
 
   toggleCommandMode = (command) => {
@@ -255,6 +263,13 @@ class CommandContainer extends React.Component {
     prevCommandMode = commandMode;
     // eslint-disable-next-line no-undef
     commandMode = command;
+    this.setState(this.state);
+  }
+
+  changeColor = () => {
+    if (selectedColor && selectedColor.palette === 'custom') {
+      selectedColor.color = document.getElementById('custom_picker').value;
+    }
     this.setState(this.state);
   }
 }
