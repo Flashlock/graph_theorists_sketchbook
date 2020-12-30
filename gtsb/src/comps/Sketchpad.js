@@ -168,11 +168,11 @@ class Sketchpad extends React.Component {
 
     //coloring?
     if (selectedColor) {
-      for (let i = 0; i < graphVertices.length; i++) {
-        graphVertices[i].color = selectedColor.color;
+      for (let i = 0; i < selectedVertices.length; i++) {
+        selectedVertices[i].color = selectedColor.color;
       }
-      for (let i = 0; i < graphEdges.length; i++) {
-        graphEdges[i].color = selectedColor.color;
+      for (let i = 0; i < selectedEdges.length; i++) {
+        selectedEdges[i].color = selectedColor.color;
       }
       selectedColor = null;
       this.setState(this.state);
