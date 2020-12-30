@@ -1,3 +1,4 @@
+let selectedColor;
 // eslint-disable-next-line no-undef
 class CommandContainer extends React.Component {
   constructor(props) {
@@ -6,9 +7,15 @@ class CommandContainer extends React.Component {
     this.commandMode = 'Draw Vertex';
     this.customColors = []
     for (let i = 0; i < 15; i++) {
-      this.customColors.push('white');
+      this.customColors.push({
+        color: 'white',
+        id: i,
+        palette: 'custom'
+      });
     }
-    this.defaultColors = ['red', 'blue', 'yellow'];
+    this.defaultColors = [{ color: 'red', id: 0, palette: 'default' }, { color: 'blue', id: 1, palette: 'default' },
+      { color: 'yellow', id: 2, palette: 'default' }];
+    selectedColor = this.defaultColors[1];
 
     setInterval(this.update.bind(this), 33);
   }
@@ -18,7 +25,6 @@ class CommandContainer extends React.Component {
   }
 
   render() {
-    this.colorCount=0;
     // eslint-disable-next-line no-undef
     return e(
         'div',
@@ -227,16 +233,21 @@ class CommandContainer extends React.Component {
 
   ColorRenderer = (color) => {
     const style = {
-      background: color
+      background: color.color
     }
     return e(
         'div',
         {
-          key: 'd' + this.colorCount++,
+          key: color.palette + color.id.toString(),
           className: 'color_palette',
-          style: style
+          style: style,
+          onClick: this.selectColor.bind(this, color)
         }
     )
+  }
+
+  selectColor(color) {
+    selectedColor = color;
   }
 
   toggleCommandMode = (command) => {

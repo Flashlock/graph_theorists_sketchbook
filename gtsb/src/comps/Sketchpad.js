@@ -24,7 +24,7 @@ class Sketchpad extends React.Component {
     super(props);
     this.state = {};
 
-    this.mousePrevPos=[0, 0];
+    this.mousePrevPos = [0, 0];
 
     //fundamental constants
     this.selectionBorderRadius = 4;
@@ -40,8 +40,10 @@ class Sketchpad extends React.Component {
     //switches
     this.canDrawVertex = true;
     this.displayVertexData = false;
-    this.bridgeID=false;
+    this.bridgeID = false;
 
+    this.defaultVertexColor = 'blue';
+    this.defaultEdgeColor = 'black';
     //33 ms = ~30fps
     setInterval(this.update, 33);
   }
@@ -163,6 +165,18 @@ class Sketchpad extends React.Component {
       }
       this.setState(this.state);
     }
+
+    //coloring?
+    if (selectedColor) {
+      for (let i = 0; i < graphVertices.length; i++) {
+        graphVertices[i].color = selectedColor.color;
+      }
+      for (let i = 0; i < graphEdges.length; i++) {
+        graphEdges[i].color = selectedColor.color;
+      }
+      selectedColor = null;
+      this.setState(this.state);
+    }
   }
 
   //------------Element Renderers---------------------//
@@ -173,7 +187,7 @@ class Sketchpad extends React.Component {
       position: 'absolute',
       top: y,
       left: x,
-      background: vertex.isHovering ? 'pink' : 'blue',
+      background: vertex.isHovering ? 'pink' : vertex.color,
       borderRadius: '50%',
       border: vertex.isSelected ? this.selectionBorderRadius + 'px solid pink' : null,
       width: this.vertexDiameter + 'px',
@@ -246,7 +260,7 @@ class Sketchpad extends React.Component {
       position: 'absolute',
       top: edge.isSelected || edge.isBridge ? edge.y - this.selectionBorderRadius : edge.y,
       left: edge.isSelected || edge.isBridge ? edge.x - this.selectionBorderRadius : edge.x,
-      background: edge.isHovering ? 'pink' : 'black',
+      background: edge.isHovering ? 'pink' : edge.color,
       border: border,
       width: this.edgeWidth,
       height: edge.height,
@@ -356,7 +370,8 @@ class Sketchpad extends React.Component {
       x: e.clientX,
       y: e.clientY - this.origin[1]+this.vertexDiameter/2,
       edges: [],
-      displayVertexData: this.displayVertexData
+      displayVertexData: this.displayVertexData,
+      color: this.defaultVertexColor
     }
     graphVertices.push(vertex);
     this.setState(this.state);
@@ -430,7 +445,8 @@ class Sketchpad extends React.Component {
       vertex2: vertex2,
       offsetX: 0,
       offsetY: 0,
-      isLoop: vertex1.id === vertex2.id
+      isLoop: vertex1.id === vertex2.id,
+      color: this.defaultEdgeColor
     }
     vertex1.edges.push(edge);
     graphEdges.push(edge);
