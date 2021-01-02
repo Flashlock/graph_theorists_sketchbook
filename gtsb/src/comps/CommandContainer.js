@@ -1,4 +1,6 @@
 let selectedColor;
+//arrow color starts as blue
+let arrowColor = '#0000ff';
 // eslint-disable-next-line no-undef
 class CommandContainer extends React.Component {
   constructor(props) {
@@ -215,9 +217,10 @@ class CommandContainer extends React.Component {
               },
               [
                 e(
-                    'h3',
+                    'label',
                     {
-                      key: 'arrow_color_header'
+                      key: 'arrow_color_header',
+                      htmlFor: 'arrow_color_picker'
                     },
                     'Arrow Color Picker'
                 ),
@@ -226,9 +229,20 @@ class CommandContainer extends React.Component {
                     {
                       key: 'arrow_color_picker',
                       type: 'color',
-                      className: 'color_picker'
+                      className: 'color_picker',
+                      id: 'arrow_color_picker',
+                      value: arrowColor,
+                      onChange: this.changeArrowColor
                     }
-                )
+                ),
+                  e(
+                      'label',
+                      {
+                        key: 'arrow_color_hex_code',
+                        htmlFor: 'arrow_color_picker'
+                      },
+                      arrowColor
+                  )
               ]
           )
         ]
@@ -280,6 +294,11 @@ class CommandContainer extends React.Component {
     if (selectedColor && selectedColor.palette === 'custom') {
       selectedColor.color = document.getElementById('custom_picker').value;
     }
+    this.setState(this.state);
+  }
+
+  changeArrowColor = () => {
+    arrowColor = document.getElementById('arrow_color_picker').value;
     this.setState(this.state);
   }
 }

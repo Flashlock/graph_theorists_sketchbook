@@ -176,6 +176,12 @@ class Sketchpad extends React.Component {
       }
       this.setState(this.state);
     }
+
+    //update arrow color?
+    if (this.arrowColor !== arrowColor) {
+      this.arrowColor = arrowColor;
+      this.setState(this.state);
+    }
   }
 
   //------------Element Renderers---------------------//
@@ -332,7 +338,8 @@ class Sketchpad extends React.Component {
       height: 0,
       borderLeft: this.arrowSize + 'px solid transparent',
       borderRight: this.arrowSize + 'px solid transparent',
-      borderBottom: arc.isHovering ? this.arrowSize + 'px solid pink' : this.arrowSize + 'px solid blue'
+      // eslint-disable-next-line no-undef
+      borderBottom: arc.isHovering ? this.arrowSize + 'px solid pink' : this.arrowSize + 'px solid' + arrowColor
     }
     return e(
         'div',
@@ -649,6 +656,8 @@ class Sketchpad extends React.Component {
       v2.edges = v2.edges.filter((e) => e.id !== edge.id);
     }
     selectedEdges = [];
+    if(this.bridgeID)
+      this.locateBridges();
     this.setState(this.state);
   }
 
