@@ -15,8 +15,8 @@ class CommandContainer extends React.Component {
         palette: 'custom'
       });
     }
-    this.defaultColors = [{ color: 'red', id: 0, palette: 'default' }, { color: 'blue', id: 1, palette: 'default' },
-      { color: 'yellow', id: 2, palette: 'default' }];
+    this.defaultColors = [{ color: 'red', id: 0, palette: 'default' }, { color: 'black', id: 1, palette: 'default' },
+      { color: 'blue', id: 2, palette: 'default' }];
 
     setInterval(this.update.bind(this), 33);
   }
@@ -166,7 +166,8 @@ class CommandContainer extends React.Component {
                             className: 'color_picker',
                             id: 'custom_picker',
                             type: 'color',
-                            onChange: this.changeColor
+                            onChange: this.changeColor,
+                            value: arrowColor
                           }
                       ),
                       //default color palette header
