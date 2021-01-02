@@ -694,8 +694,19 @@ class Sketchpad extends React.Component {
       v2.edges = v2.edges.filter((e) => e.id !== edge.id);
     }
     selectedEdges = [];
-    if(this.bridgeID)
+    if (this.bridgeID)
       this.locateBridges();
+
+    //loop through remaining edges and reset parallel edges
+    let visitedVertexPairs = [];
+    for (let i = 0; i < graphEdges.length; i++) {
+      const v1 = graphEdges[i].vertex1;
+      const v2 = graphEdges[i].vertex2;
+      //don't care if I've already been there
+      if (visitedVertexPairs.find((pair) => pair === [v1.id, v2.id] || pair === [v2.id, v1.id]))
+        continue;
+      this.applyParallelEdges(v1, v2);
+    }
   }
 
   //-------------------Element Hovering------------------------//
