@@ -1,6 +1,7 @@
 let selectedColor;
 //arrow color starts as blue
 let arrowColor = '#0000ff';
+
 // eslint-disable-next-line no-undef
 class CommandContainer extends React.Component {
   constructor(props) {
@@ -21,10 +22,6 @@ class CommandContainer extends React.Component {
     setInterval(this.update.bind(this), 33);
   }
 
-  componentDidMount() {
-    this.edges = graphEdges;
-  }
-
   render() {
     // eslint-disable-next-line no-undef
     return e(
@@ -40,7 +37,7 @@ class CommandContainer extends React.Component {
                 className: 'component_header',
                 key: 'commands_comp_header'
               },
-              this.commandMode
+              commandMode
           ),
           e(
               'div',
@@ -61,7 +58,7 @@ class CommandContainer extends React.Component {
                       e(
                           'button',
                           {
-                            onClick: this.toggleCommandMode.bind(this, 'Draw Vertex'),
+                            onClick: this.receiveCommand.bind(this,'Draw Vertex'),
                             className: 'command_button',
                             id: 'draw_vertex',
                             key: 'draw_vertex'
@@ -73,7 +70,7 @@ class CommandContainer extends React.Component {
                       e(
                           'button',
                           {
-                            onClick: this.toggleCommandMode.bind(this, 'Draw Edge'),
+                            onClick: this.receiveCommand.bind(this,'Draw Edge'),
                             className: 'command_button',
                             id: 'draw_edge',
                             key: 'draw_edge'
@@ -85,7 +82,7 @@ class CommandContainer extends React.Component {
                       e(
                           'button',
                           {
-                            onClick: this.toggleCommandMode.bind(this, 'Draw Arc'),
+                            onClick: this.receiveCommand.bind(this,'Draw Arc'),
                             className: 'command_button',
                             id: 'draw_arc',
                             key: 'draw_arc'
@@ -97,7 +94,7 @@ class CommandContainer extends React.Component {
                       e(
                           'button',
                           {
-                            onClick: this.toggleCommandMode.bind(this, 'Selector'),
+                            onClick: this.receiveCommand.bind(this,'Selector'),
                             className: 'command_button',
                             id: 'selector',
                             key: 'selector'
@@ -109,7 +106,7 @@ class CommandContainer extends React.Component {
                       e(
                           'button',
                           {
-                            onClick: this.toggleCommandMode.bind(this, 'Grabber'),
+                            onClick: this.receiveCommand.bind(this,'Grabber'),
                             className: 'command_button',
                             id: 'grabber',
                             key: 'grabber'
@@ -121,7 +118,7 @@ class CommandContainer extends React.Component {
                       e(
                           'button',
                           {
-                            onClick: this.toggleCommandMode.bind(this, 'Delete'),
+                            onClick: this.receiveAction.bind(this,'Delete'),
                             className: 'command_button',
                             id: 'delete',
                             key: 'delete'
@@ -133,7 +130,7 @@ class CommandContainer extends React.Component {
                       e(
                           'button',
                           {
-                            onClick: this.toggleCommandMode.bind(this, 'Clear Pad'),
+                            onClick: this.receiveAction.bind(this, 'Clear Pad'),
                             className: 'command_button',
                             id: 'clearPad',
                             key: 'clearPad'
@@ -196,16 +193,16 @@ class CommandContainer extends React.Component {
                       this.customColors.map((color) => {
                         return this.ColorRenderer(color);
                       }),
-                        //selected color hex code
-                        e(
-                            'h3',
-                            {
-                              key: 'palette_hex_code',
-                              className: 'color_header',
-                              id: 'palette_hex_code'
-                            },
-                            selectedColor? selectedColor.color: '#------'
-                        )
+                      //selected color hex code
+                      e(
+                          'h3',
+                          {
+                            key: 'palette_hex_code',
+                            className: 'color_header',
+                            id: 'palette_hex_code'
+                          },
+                          selectedColor ? selectedColor.color : '#------'
+                      )
                     ]
                 )
               ]
@@ -236,14 +233,14 @@ class CommandContainer extends React.Component {
                       onChange: this.changeArrowColor
                     }
                 ),
-                  e(
-                      'label',
-                      {
-                        key: 'arrow_color_hex_code',
-                        htmlFor: 'arrow_color_picker'
-                      },
-                      arrowColor
-                  )
+                e(
+                    'label',
+                    {
+                      key: 'arrow_color_hex_code',
+                      htmlFor: 'arrow_color_picker'
+                    },
+                    arrowColor
+                )
               ]
           )
         ]
@@ -251,8 +248,9 @@ class CommandContainer extends React.Component {
   }
 
   update() {
-    if (this.commandMode !== commandMode && !nonCommands.find((command) => command === commandMode)) {
-      this.commandMode = commandMode;
+    //if there was an update call I need to check in
+    if (updateCall && !updateCallers[2]) {
+      updateCallers[2] = true;
       this.setState(this.state);
     }
   }
@@ -280,27 +278,29 @@ class CommandContainer extends React.Component {
       selectedColor = null;
     } else
       selectedColor = color;
-    this.setState(this.state);
-  }
-
-  toggleCommandMode = (command) => {
-    // eslint-disable-next-line no-undef
-    prevCommandMode = commandMode;
-    // eslint-disable-next-line no-undef
-    commandMode = command;
-    this.setState(this.state);
+    updateCall = true;
   }
 
   changeColor = () => {
     if (selectedColor && selectedColor.palette === 'custom') {
       selectedColor.color = document.getElementById('custom_picker').value;
     }
-    this.setState(this.state);
+    updateCall = true;
   }
 
   changeArrowColor = () => {
     arrowColor = document.getElementById('arrow_color_picker').value;
-    this.setState(this.state);
+    updateCall = true;
+  }
+
+  receiveAction = (action) => {
+    actionCommand = action;
+    updateCall = true;
+  }
+
+  receiveCommand = (command) => {
+    commandMode = command;
+    updateCall = true;
   }
 }
 

@@ -37,9 +37,19 @@
   text-align: left;
 }
 
+#vertex_count{
+  display: flex;
+}
+
 #data_toggles{
   display: flex;
   justify-content: space-between;
+}
+
+#custom_id{
+  display: flex;
+  flex-direction: column;
+  text-align: left;
 }
 
 /*------------------Sketchpad-----------------------*/
@@ -53,29 +63,21 @@
   border: var(--component-border);
 }
 
+.vertex{
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .vertex_id {
   position: relative;
-  border: none;
-  background: none;
-  text-align: center;
-  top: -100%;
-  left: -295%;
-  font-weight: normal;
-}
-
-.vertex_id::-webkit-input-placeholder{
-  font-weight: normal;
-  color: black;
-}
-
-.vertex_id:focus{
-  outline: none;
+  top: -60%;
 }
 
 .vertex_deg{
   position: relative;
-  top: 50%;
-  left: 35%;
+  top: 60%;
 }
 
 /*------------------Commands-----------------------*/

@@ -3,8 +3,6 @@ class GraphData extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
-    this.vertexCount = graphVertices.length;
-    this.edgeCount = graphEdges.length;
     this.isBP = false;
     setInterval(this.update.bind(this), 33);
   }
@@ -43,7 +41,7 @@ class GraphData extends React.Component {
                 e(
                     'button',
                     {
-                      onClick: this.toggleCommand.bind(this, 'Display Vertex Data'),
+                      onClick: this.receiveAction.bind(this, 'Display Vertex Data'),
                       className: 'command_button',
                       id: 'vertex_data',
                       key: 'vertex_data'
@@ -53,7 +51,7 @@ class GraphData extends React.Component {
                 e(
                     'button',
                     {
-                      onClick: this.toggleCommand.bind(this, 'Reset IDs'),
+                      onClick: this.receiveAction.bind(this, 'Reset IDs'),
                       className: 'command_button',
                       id: 'reset_id',
                       key: 'reset_id'
@@ -63,7 +61,7 @@ class GraphData extends React.Component {
                 e(
                     'button',
                     {
-                      onClick: this.toggleCommand.bind(this, 'Bridge ID'),
+                      onClick: this.receiveAction.bind(this, 'Bridge ID'),
                       className: 'command_button',
                       id: 'bridge_ID',
                       key: 'bridge_ID'
@@ -72,13 +70,15 @@ class GraphData extends React.Component {
                 )
               ]
           ),
+          this.showSelectedVertex(),
           e(
               'h3',
               {
                 key: 'vertex_count',
-                className: 'graph_data'
+                className: 'graph_data',
+                id: 'vertex_count',
               },
-              vertexCount
+              vertexCount,
           ),
           e(
               'h3',
@@ -108,10 +108,54 @@ class GraphData extends React.Component {
     );
   }
 
+  showSelectedVertex = () => {
+    let selectedVertex = ' ';
+    if (selectedVertices.length === 1 && commandMode === 'Selector')
+      selectedVertex = selectedVertices[0].id.toString();
+    return (
+        e(
+            'div',
+            {
+              key: 'custom_id',
+              id: 'custom_id'
+            },
+            [
+              e(
+                  'label',
+                  {
+                    key: 'custom_id_label',
+                    id: 'custom_id_label',
+                    htmlFor: 'custom_id_input'
+                  },
+                  'Selected Vertex: ' + selectedVertex,
+              ),
+              e(
+                  'textarea',
+                  {
+                    type: 'text',
+                    key: 'custom_id_input',
+                    id: 'custom_id_input',
+                    value: selectedVertices[0] ? selectedVertices[0].customID : '',
+                    placeholder: 'Input Custom ID',
+                    onInput: this.applyCustomVertexID,
+                    onChange: this.applyCustomVertexID
+                  }
+              )
+            ]
+        )
+    );
+  }
+
+  applyCustomVertexID = (ev) => {
+    for (let i = 0; i < selectedVertices.length; i++) {
+      selectedVertices[i].customID = ev.target.value;
+    }
+    updateCall = true;
+  }
+
   update() {
-    if (graphVertices.length !== this.vertexCount || graphEdges.length !== this.edgeCount) {
-      this.vertexCount = graphVertices.length;
-      this.edgeCount = graphEdges.length;
+    if (updateCall && !updateCallers[0]) {
+      updateCallers[0] = true;
       this.setState(this.state);
     }
   }
@@ -184,10 +228,9 @@ class GraphData extends React.Component {
     }
   }
 
-  toggleCommand = (command) => {
-    prevCommandMode = commandMode;
-    commandMode = command
-    this.setState(this.state);
+  receiveAction = (action) => {
+    actionCommand = action;
+    updateCall = true;
   }
 }
 

@@ -4,10 +4,13 @@
 // eslint-disable-next-line no-undef
 const e = React.createElement;
 
+//basically the state the user's in, allowing for multiple actions
 let commandMode = 'Draw Vertex';
-// eslint-disable-next-line no-unused-vars
-const nonCommands = ['Clear Pad', 'Delete', 'Display Vertex Data', 'Reset IDs', 'Bridge ID'];
-let prevCommandMode = commandMode;
+//one time actions, typically used in conjunction with an update call
+let actionCommand;
+let updateCall = false;
+let updateCallers = [false, false, false];
+
 let mouseMoveCTX;
 document.getElementById('pad_wrapper').addEventListener('mousemove', (event)=> {
   mouseMoveCTX = event;
@@ -81,6 +84,7 @@ class Sketchpad extends React.Component {
   }
 
   update = () => {
+    //perform command, grabbing can take place outside of group updates
     //move Vertex
     if (commandMode === 'Grabber' && this.movingVertex) {
       const dX = mouseMoveCTX.clientX - this.mousePrevPos[0];
@@ -105,92 +109,108 @@ class Sketchpad extends React.Component {
       this.setState(this.state);
     }
 
-    //was delete pressed?
-    if (commandMode === 'Delete') {
-      //select all edges attached to vertices
-      for (let i = 0; i < selectedVertices.length; i++) {
-        const v = selectedVertices[i];
-        for (let j = 0; j < v.edges.length; j++) {
-          selectedEdges.push(v.edges[j]);
+    if (updateCall && !updateCallers[1]) {
+      //perform action
+      if(actionCommand) {
+        //was delete pressed?
+        if (actionCommand === 'Delete') {
+          //select all edges attached to vertices
+          for (let i = 0; i < selectedVertices.length; i++) {
+            const v = selectedVertices[i];
+            for (let j = 0; j < v.edges.length; j++) {
+              selectedEdges.push(v.edges[j]);
+            }
+          }
+
+          //delete all selected vertices and edges
+          this.deleteVertices();
+          this.deleteEdges();
+        }
+
+        //was clear pad pressed?
+        else if (actionCommand === 'Clear Pad') {
+          //delete all
+          selectedVertices = graphVertices;
+          selectedEdges = graphEdges;
+
+          this.deleteEdges();
+          this.deleteVertices();
+
+          //set mode to draw Vertex after clear
+          commandMode = 'Draw Vertex';
+        }
+
+        //vertex data display?
+        else if (actionCommand === 'Display Vertex Data') {
+          this.displayVertexData = !this.displayVertexData;
+          for (let i = 0; i < graphVertices.length; i++) {
+            graphVertices[i].displayVertexData = this.displayVertexData;
+          }
+        }
+
+        //reset ids?
+        else if (actionCommand === 'Reset IDs') {
+          this.vertexIDCount = graphVertices.length;
+          this.edgeIDCount = graphEdges.length;
+          for (let i = 0; i < graphVertices.length; i++) {
+            graphVertices[i].id = i;
+          }
+          for (let i = 0; i < graphEdges.length; i++) {
+            graphEdges[i].id = i;
+          }
+        }
+
+        //locate bridges?
+        else if (actionCommand === 'Bridge ID') {
+          this.bridgeID = !this.bridgeID;
+          if (this.bridgeID) {
+            this.locateBridges();
+          } else {
+            //toggle all bridges off
+            for (let i = 0; i < graphEdges.length; i++) {
+              graphEdges[i].isBridge = false;
+            }
+          }
+        }
+
+        actionCommand = null;
+      }
+
+      //coloring?
+      if (selectedColor && (selectedVertices.length > 0 || selectedEdges.length > 0)) {
+        for (let i = 0; i < selectedVertices.length; i++) {
+          selectedVertices[i].color = selectedColor.color;
+        }
+        for (let i = 0; i < selectedEdges.length; i++) {
+          selectedEdges[i].color = selectedColor.color;
         }
       }
 
-      //delete all selected vertices and edges
-      this.deleteVertices();
-      this.deleteEdges();
-
-      //set mode to previous after deletion
-      commandMode = prevCommandMode;
-    }
-
-    //was clear pad pressed?
-    if (commandMode === 'Clear Pad') {
-      //delete all
-      selectedVertices = graphVertices;
-      selectedEdges = graphEdges;
-
-      this.deleteEdges();
-      this.deleteVertices();
-
-      //set mode to draw Vertex after clear
-      commandMode = 'Draw Vertex';
-    }
-
-    //vertex data display?
-    if (commandMode === 'Display Vertex Data') {
-      this.displayVertexData = !this.displayVertexData;
-      for (let i = 0; i < graphVertices.length; i++) {
-        graphVertices[i].displayVertexData = this.displayVertexData;
+      //update arrow color?
+      if (this.arrowColor !== arrowColor) {
+        this.arrowColor = arrowColor;
       }
-      commandMode = prevCommandMode;
+
+      updateCallers[1] = true;
       this.setState(this.state);
-    }
-
-    //rest ids?
-    if (commandMode === 'Reset IDs') {
-      commandMode = prevCommandMode;
-      this.vertexIDCount = graphVertices.length;
-      this.edgeIDCount = graphEdges.length;
-      for (let i = 0; i < graphVertices.length; i++) {
-        graphVertices[i].id = i;
-      }
-      for (let i = 0; i < graphEdges.length; i++) {
-        graphEdges[i].id = i;
-      }
-      this.setState(this.state);
-    }
-
-    //locate bridges?
-    if (commandMode === 'Bridge ID') {
-      commandMode = prevCommandMode;
-      this.bridgeID = !this.bridgeID;
-      if (this.bridgeID) {
-        this.locateBridges();
-      } else {
-        //toggle all bridges off
-        for (let i = 0; i < graphEdges.length; i++) {
-          graphEdges[i].isBridge = false;
+    } else
+        //if the call hasn't been completed yet, check on the others
+      if (updateCall) {
+        let callComplete = true;
+        for (let i = 0; i < updateCallers.length; i++) {
+          if (!updateCallers[i]) {
+            callComplete = false;
+            break;
+          }
+        }
+        //if the call is complete, reset
+        if (callComplete) {
+          updateCall = false;
+          for (let i = 0; i < updateCallers.length; i++) {
+            updateCallers[i] = false;
+          }
         }
       }
-      this.setState(this.state);
-    }
-
-    //coloring?
-    if (selectedColor && (selectedVertices.length > 0 || selectedEdges.length > 0)) {
-      for (let i = 0; i < selectedVertices.length; i++) {
-        selectedVertices[i].color = selectedColor.color;
-      }
-      for (let i = 0; i < selectedEdges.length; i++) {
-        selectedEdges[i].color = selectedColor.color;
-      }
-      this.setState(this.state);
-    }
-
-    //update arrow color?
-    if (this.arrowColor !== arrowColor) {
-      this.arrowColor = arrowColor;
-      this.setState(this.state);
-    }
   }
 
   //------------Element Renderers---------------------//
@@ -217,6 +237,7 @@ class Sketchpad extends React.Component {
             style: style,
             id: id,
             key: id,
+            className: 'vertex',
             onMouseEnter: this.mouseEnterElement.bind(this, true, vertex),
             onMouseLeave: this.mouseExitElement.bind(this, true, vertex),
             onMouseDown: this.assignVertex.bind(this, vertex),
@@ -224,13 +245,12 @@ class Sketchpad extends React.Component {
           },
           [
             e(
-                'input',
+                'div',
                 {
                   className: 'vertex_id',
                   key: 'idDisplay' + id,
-                  type: 'text',
-                  placeholder: vertex.id.toString()
-                }
+                },
+                vertex.customID?vertex.customID.toString(): vertex.id.toString()
             ),
             e(
                 'div',
@@ -377,19 +397,22 @@ class Sketchpad extends React.Component {
   }
 
   //----------------Vertex Manipulation-------------------//
-  drawVertex = (e) => {
+  drawVertex = (ev) => {
     if (!this.canDrawVertex || commandMode !== 'Draw Vertex')
       return;
     const vertex = {
       id: this.vertexIDCount++,
-      x: e.clientX,
-      y: e.clientY,
+      x: ev.clientX,
+      y: ev.clientY,
       edges: [],
       displayVertexData: this.displayVertexData,
       color: this.defaultVertexColor
     }
+
     graphVertices.push(vertex);
-    this.setState(this.state);
+
+    updateCall = true;
+
     return vertex;
   }
 
@@ -425,6 +448,11 @@ class Sketchpad extends React.Component {
     }
     this.mousePrevPos = [mouseMoveCTX.clientX, mouseMoveCTX.clientY];
     this.movingVertex = vertex;
+  }
+
+  setCustomID = (ev) => {
+    const vertex = graphVertices.find((v) => v.id === parseInt(ev.target.parentElement.id.substring(1)));
+    vertex.customID = ev.target.value;
   }
 
   //-------------------Edge Manipulation----------------//
@@ -604,7 +632,7 @@ class Sketchpad extends React.Component {
               arc.isArc = true;
               arc.targetVertex = selectedVertices[1];
             } else {
-              console.log("Whoopsie");
+              console.log("Whoopsie. Selecting an element in: ", commandMode);
             }
           selectedVertices = this.deselectElements(selectedVertices);
         }
@@ -628,21 +656,21 @@ class Sketchpad extends React.Component {
           selectedEdges.push(element);
         }
       }
-    this.setState(this.state);
+    updateCall = true;
   }
 
   deselectElements = (selectedList) => {
     for (let i = 0; i < selectedList.length; i++) {
       selectedList[i].isSelected = false;
     }
-    this.setState(this.state);
+    updateCall = true;
     return [];
   }
 
   deselectElement = (selectedList, element) => {
     element.isSelected = false;
     selectedList = selectedList.filter((emt) => emt.id !== element.id);
-    this.setState(this.state);
+    updateCall = true;
     return selectedList;
   }
 
@@ -652,7 +680,6 @@ class Sketchpad extends React.Component {
      graphVertices = graphVertices.filter((vertex) => vertex.id !== selectedVertices[i].id);
     }
     selectedVertices = [];
-    this.setState(this.state);
   }
 
   deleteEdges = () => {
@@ -667,7 +694,6 @@ class Sketchpad extends React.Component {
     selectedEdges = [];
     if(this.bridgeID)
       this.locateBridges();
-    this.setState(this.state);
   }
 
   //-------------------Element Hovering------------------------//
@@ -682,11 +708,9 @@ class Sketchpad extends React.Component {
     element.isHovering = false;
     this.setState(this.state);
   }
-
-  toggleMouseOverPad = (isOver) =>{
-    console.log("HERE");
-  }
 }
+
+
 
 const domContainerSketchpad = document.querySelector('#sketchpad_container');
 // eslint-disable-next-line no-undef
