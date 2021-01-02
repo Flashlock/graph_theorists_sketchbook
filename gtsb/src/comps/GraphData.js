@@ -7,6 +7,17 @@ class GraphData extends React.Component {
     setInterval(this.update.bind(this), 33);
   }
 
+  componentDidMount() {
+    const idInput = document.getElementById('custom_id_input');
+    idInput.addEventListener('keypress', (ev => {
+      if (ev.defaultPrevented)
+        return;
+      if (document.activeElement === idInput && ev.code === 'Enter') {
+        idInput.blur();
+      }
+    }));
+  }
+
   render() {
     const vertexCount = 'v = ' + graphVertices.length.toString();
     const edgeCount = 'e = ' + graphEdges.length.toString();
@@ -109,9 +120,13 @@ class GraphData extends React.Component {
   }
 
   showSelectedVertex = () => {
-    let selectedVertex = ' ';
-    if (selectedVertices.length === 1 && commandMode === 'Selector')
-      selectedVertex = selectedVertices[0].id.toString();
+    let selectedVertex = '';
+    if (commandMode === 'Selector') {
+      for (let i = 0; i < selectedVertices.length; i++) {
+        const id = selectedVertices[i].customID ? selectedVertices[i].customID : selectedVertices[i].id;
+        selectedVertex += i === selectedVertices.length - 1 ? id : id + ', ';
+      }
+    }
     return (
         e(
             'div',

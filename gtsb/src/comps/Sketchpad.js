@@ -37,7 +37,7 @@ class Sketchpad extends React.Component {
     this.loopSpacing = 12;
     this.loopDiameter = 50;
     this.arrowSize = 10;
-    this.grabberPadding=10;
+    this.grabberPadding = 10;
     //ID Counts
     this.vertexIDCount = 0;
     this.edgeIDCount = 0;
@@ -48,6 +48,7 @@ class Sketchpad extends React.Component {
 
     this.defaultVertexColor = 'blue';
     this.defaultEdgeColor = 'black';
+
     //33 ms = ~30fps
     setInterval(this.update, 33);
   }
@@ -221,7 +222,7 @@ class Sketchpad extends React.Component {
       position: 'absolute',
       top: y,
       left: x,
-      background: vertex.isHovering ? 'pink' : vertex.color,
+      background: vertex.isHovering || (this.movingVertex && this.movingVertex.id === vertex.id) ? 'pink' : vertex.color,
       borderRadius: '50%',
       border: vertex.isSelected ? this.selectionBorderRadius + 'px solid pink' : null,
       width: this.vertexDiameter + 'px',
@@ -708,9 +709,12 @@ class Sketchpad extends React.Component {
     element.isHovering = false;
     this.setState(this.state);
   }
+
+  //---------------------Keyboard Input------------------------//
+  keyPress = (ev) =>{
+    console.log('here');
+  }
 }
-
-
 
 const domContainerSketchpad = document.querySelector('#sketchpad_container');
 // eslint-disable-next-line no-undef
