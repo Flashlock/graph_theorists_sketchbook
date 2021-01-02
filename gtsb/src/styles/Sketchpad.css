@@ -67,6 +67,7 @@
   background: lightgray;
   height: 100%;
   border: var(--component-border);
+  clip-path: inset(0px 0px 0px 0px);
 }
 
 .vertex{
