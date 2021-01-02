@@ -57,10 +57,9 @@ class Sketchpad extends React.Component {
     //this needs to be here I guess, componentDidMount wasn't working
     if(!this.sketchPad) {
       this.sketchPad = document.getElementById('sketchpad');
-      if(this.sketchPad){
-        //doesn't find it on first render
-        this.padRect=this.sketchPad.getBoundingClientRect();
-      }
+    }
+    if(this.sketchPad&&!this.padRect) {
+      this.padRect = this.sketchPad.getBoundingClientRect();
     }
     return e(
         'div',
@@ -92,12 +91,10 @@ class Sketchpad extends React.Component {
       const dY = mouseMoveCTX.clientY - this.mousePrevPos[1];
 
       //make sure not to move it outside the pad space
-      const radius = this.vertexDiameter / 2 + this.grabberPadding;
-      const lateralCheck = this.movingVertex.x + dX - radius > this.padRect.left && this.movingVertex.x + dX + radius < this.padRect.right;
-      const verticalCheck = this.movingVertex.y + dY - radius > this.padRect.top && this.movingVertex.y + dY + radius < this.padRect.bottom;
-      if (lateralCheck)
+      const inBounds = this.inBounds(this.movingVertex.x + dX, this.movingVertex.y + dY);
+      if (inBounds[0])
         this.movingVertex.x += dX;
-      if (verticalCheck)
+      if (inBounds[1])
         this.movingVertex.y += dY;
 
       //take care of parallel edges
@@ -403,7 +400,14 @@ class Sketchpad extends React.Component {
 
   //----------------Vertex Manipulation-------------------//
   drawVertex = (ev) => {
-    if (!this.canDrawVertex || commandMode !== 'Draw Vertex')
+    if(!this.sketchPad) {
+      this.sketchPad = document.getElementById('sketchpad');
+    }
+    if(!this.padRect) {
+      this.padRect = this.sketchPad.getBoundingClientRect();
+    }
+    const inBounds = this.inBounds(ev.clientX, ev.clientY);
+    if (!this.canDrawVertex || commandMode !== 'Draw Vertex' || !inBounds[0] || !inBounds[1])
       return;
     const vertex = {
       id: this.vertexIDCount++,
@@ -458,6 +462,13 @@ class Sketchpad extends React.Component {
   setCustomID = (ev) => {
     const vertex = graphVertices.find((v) => v.id === parseInt(ev.target.parentElement.id.substring(1)));
     vertex.customID = ev.target.value;
+  }
+
+  inBounds(x, y) {
+    const radius = this.vertexDiameter / 2 + this.grabberPadding;
+    const lateralCheck = x - radius > this.padRect.left && x + radius < this.padRect.right;
+    const verticalCheck = y - radius > this.padRect.top && y + radius < this.padRect.bottom;
+    return [lateralCheck, verticalCheck];
   }
 
   //-------------------Edge Manipulation----------------//
