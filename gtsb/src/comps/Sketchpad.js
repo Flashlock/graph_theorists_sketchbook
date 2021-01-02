@@ -591,22 +591,26 @@ class Sketchpad extends React.Component {
     return shortestPath;
   }
 
-  pathFinderHelper(currentVertex, path, paths, finish){
+  pathFinderHelper(currentVertex, path, paths, finish) {
     path.push(currentVertex);
-    if(currentVertex.id===finish.id){
+    if (currentVertex.id === finish.id) {
       paths.push(path);
       return;
     }
-    for(let i=0;i<currentVertex.edges.length;i++){
-      if(!path.find(v=>v.id===currentVertex.edges[i].vertex1.id)){
+    for (let i = 0; i < currentVertex.edges.length; i++) {
+      let searchVertex;
+      if (!path.find(v => v.id === currentVertex.edges[i].vertex1.id)) {
         //continue search on vertex1
-        this.pathFinderHelper(currentVertex.edges[i].vertex1, path, paths, finish);
-      }
-      else if(!path.find(v=>v.id===currentVertex.edges[i].vertex2.id)){
-        //continue search on vertex2
-        this.pathFinderHelper(currentVertex.edges[i].vertex2, path, paths, finish);
-      }
-      //else do nothing for this edge
+        searchVertex = currentVertex.edges[i].vertex1;
+      } else
+        if (!path.find(v => v.id === currentVertex.edges[i].vertex2.id)) {
+          //continue search on vertex2
+          searchVertex = currentVertex.edges[i].vertex2;
+        }
+
+      if (searchVertex && ((currentVertex.edges[i].isArc && currentVertex.edges[i].targetVertex.id === searchVertex.id)
+          || !currentVertex.edges[i].isArc))
+        this.pathFinderHelper(searchVertex, path, paths, finish);
     }
   }
 

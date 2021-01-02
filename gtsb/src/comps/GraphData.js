@@ -201,8 +201,6 @@ class GraphData extends React.Component {
     currentVertex.mColor = mColor;
     mColor = mColor === 1 ? 0 : 1;
 
-    console.log(currentVertex.id, currentVertex.mColor);
-
     for (let i = 0; i < currentVertex.edges.length; i++) {
       const edge = currentVertex.edges[i];
       const adj = this.determineAdjVertex(currentVertex, edge.vertex1, edge.vertex2);
