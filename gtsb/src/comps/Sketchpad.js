@@ -34,6 +34,7 @@ class Sketchpad extends React.Component {
     this.loopSpacing = 12;
     this.loopDiameter = 50;
     this.arrowSize = 10;
+    this.grabberPadding=10;
     //ID Counts
     this.vertexIDCount = 0;
     this.edgeIDCount = 0;
@@ -48,18 +49,20 @@ class Sketchpad extends React.Component {
     setInterval(this.update, 33);
   }
 
-  componentDidMount() {
-    this.sketchpad = document.getElementById('sketchpad');
-    const rect = this.sketchpad.getBoundingClientRect();
-    this.origin = [rect.left, rect.top];
-  }
-
   render() {
+    //this needs to be here I guess, componentDidMount wasn't working
+    if(!this.sketchPad) {
+      this.sketchPad = document.getElementById('sketchpad');
+      if(this.sketchPad){
+        //doesn't find it on first render
+        this.padRect=this.sketchPad.getBoundingClientRect();
+      }
+    }
     return e(
         'div',
         {
           id: 'sketchpad',
-          onClick: this.drawVertex
+          onClick: this.drawVertex,
         },
         [
           //map each vertex to its dom equivalent
@@ -83,8 +86,14 @@ class Sketchpad extends React.Component {
       const dX = mouseMoveCTX.clientX - this.mousePrevPos[0];
       const dY = mouseMoveCTX.clientY - this.mousePrevPos[1];
 
-      this.movingVertex.x += dX;
-      this.movingVertex.y += dY;
+      //make sure not to move it outside the pad space
+      const radius = this.vertexDiameter / 2 + this.grabberPadding;
+      const lateralCheck = this.movingVertex.x + dX - radius > this.padRect.left && this.movingVertex.x + dX + radius < this.padRect.right;
+      const verticalCheck = this.movingVertex.y + dY - radius > this.padRect.top && this.movingVertex.y + dY + radius < this.padRect.bottom;
+      if (lateralCheck)
+        this.movingVertex.x += dX;
+      if (verticalCheck)
+        this.movingVertex.y += dY;
 
       //take care of parallel edges
       for (let i = 0; i < this.movingVertex.edges.length; i++) {
@@ -374,7 +383,7 @@ class Sketchpad extends React.Component {
     const vertex = {
       id: this.vertexIDCount++,
       x: e.clientX,
-      y: e.clientY - this.origin[1]+this.vertexDiameter/2,
+      y: e.clientY,
       edges: [],
       displayVertexData: this.displayVertexData,
       color: this.defaultVertexColor
@@ -672,6 +681,10 @@ class Sketchpad extends React.Component {
     this.canDrawVertex = true;
     element.isHovering = false;
     this.setState(this.state);
+  }
+
+  toggleMouseOverPad = (isOver) =>{
+    console.log("HERE");
   }
 }
 
