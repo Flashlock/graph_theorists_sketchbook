@@ -49,18 +49,15 @@ class Sketchpad extends React.Component {
     this.defaultVertexColor = 'blue';
     this.defaultEdgeColor = 'black';
 
+    window.addEventListener('resize', this.resizeWindow);
+
     //33 ms = ~30fps
     setInterval(this.update, 33);
   }
 
   render() {
     //this needs to be here I guess, componentDidMount wasn't working
-    if(!this.sketchPad) {
-      this.sketchPad = document.getElementById('sketchpad');
-    }
-    if(this.sketchPad&&!this.padRect) {
-      this.padRect = this.sketchPad.getBoundingClientRect();
-    }
+    this.findPadAndRect();
     return e(
         'div',
         {
@@ -248,7 +245,7 @@ class Sketchpad extends React.Component {
           },
           [
             e(
-                'div',
+                'span',
                 {
                   className: 'vertex_id',
                   key: 'idDisplay' + id,
@@ -400,12 +397,7 @@ class Sketchpad extends React.Component {
 
   //----------------Vertex Manipulation-------------------//
   drawVertex = (ev) => {
-    if(!this.sketchPad) {
-      this.sketchPad = document.getElementById('sketchpad');
-    }
-    if(!this.padRect) {
-      this.padRect = this.sketchPad.getBoundingClientRect();
-    }
+    this.findPadAndRect();
     const inBounds = this.inBounds(ev.clientX, ev.clientY);
     if (!this.canDrawVertex || commandMode !== 'Draw Vertex' || !inBounds[0] || !inBounds[1])
       return;
@@ -413,6 +405,8 @@ class Sketchpad extends React.Component {
       id: this.vertexIDCount++,
       x: ev.clientX,
       y: ev.clientY,
+      xRatio: ev.clientX / this.padRect.width,
+      yRatio: ev.clientY / this.padRect.height,
       edges: [],
       displayVertexData: this.displayVertexData,
       color: this.defaultVertexColor
@@ -743,6 +737,29 @@ class Sketchpad extends React.Component {
   //---------------------Keyboard Input------------------------//
   keyPress = (ev) =>{
     console.log('here');
+  }
+
+  resizeWindow = () => {
+    //loop through vertices, recalculate their x, y based on aspects, reposition all edges
+    this.findPadAndRect();
+    for (let i = 0; i < graphVertices.length; i++) {
+      graphVertices[i].x = graphVertices[i].xRatio * this.padRect.width;
+      graphVertices[i].y = graphVertices[i].yRatio * this.padRect.height;
+    }
+
+    for (let i = 0; i < graphEdges.length; i++) {
+      this.positionEdge(graphEdges[i]);
+    }
+    this.setState(this.state);
+  }
+
+  findPadAndRect(){
+    if(!this.sketchPad) {
+      this.sketchPad = document.getElementById('sketchpad');
+    }
+    if(this.sketchPad) {
+      this.padRect = this.sketchPad.getBoundingClientRect();
+    }
   }
 }
 
