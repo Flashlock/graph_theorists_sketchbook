@@ -7,8 +7,8 @@ class CommandContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
-    this.commandMode = 'Draw Vertex';
-    this.customColors = []
+    this.customColors = [];
+    this.displayPickedColor = '#000000';
     for (let i = 0; i < 9; i++) {
       this.customColors.push({
         color: 'white',
@@ -164,7 +164,7 @@ class CommandContainer extends React.Component {
                             id: 'custom_picker',
                             type: 'color',
                             onChange: this.changeColor,
-                            value: arrowColor
+                            value: this.displayPickedColor
                           }
                       ),
                       //default color palette header
@@ -276,14 +276,17 @@ class CommandContainer extends React.Component {
     //second click deselects the color
     if (selectedColor && selectedColor.palette === color.palette && selectedColor.id === color.id) {
       selectedColor = null;
-    } else
+    } else {
       selectedColor = color;
+      this.displayPickedColor = color.color;
+    }
     updateCall = true;
   }
 
   changeColor = () => {
     if (selectedColor && selectedColor.palette === 'custom') {
       selectedColor.color = document.getElementById('custom_picker').value;
+      this.displayPickedColor = selectedColor.color;
     }
     updateCall = true;
   }
