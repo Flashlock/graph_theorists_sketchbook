@@ -9,7 +9,7 @@ class CommandContainer extends React.Component {
     this.state = {};
     this.commandMode = 'Draw Vertex';
     this.customColors = []
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 9; i++) {
       this.customColors.push({
         color: 'white',
         id: i,
