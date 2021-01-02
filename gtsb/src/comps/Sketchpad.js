@@ -155,6 +155,7 @@ class Sketchpad extends React.Component {
           this.edgeIDCount = graphEdges.length;
           for (let i = 0; i < graphVertices.length; i++) {
             graphVertices[i].id = i;
+            graphVertices[i].customID = null;
           }
           for (let i = 0; i < graphEdges.length; i++) {
             graphEdges[i].id = i;
