@@ -4,6 +4,7 @@ class GraphData extends React.Component {
     super(props);
     this.state = {};
     this.isBP = false;
+    this.maxLengthCustomID = 30;
     setInterval(this.update.bind(this), 33);
   }
 
@@ -150,6 +151,7 @@ class GraphData extends React.Component {
                     type: 'text',
                     key: 'custom_id_input',
                     id: 'custom_id_input',
+                    maxLength: '30',
                     value: selectedVertices[0] ? selectedVertices[0].customID : '',
                     placeholder: 'Input Custom ID',
                     onInput: this.applyCustomVertexID,
@@ -163,7 +165,10 @@ class GraphData extends React.Component {
 
   applyCustomVertexID = (ev) => {
     for (let i = 0; i < selectedVertices.length; i++) {
-      selectedVertices[i].customID = ev.target.value;
+      console.log(ev.target.value.length);
+      if (ev.target.value.length <= this.maxLengthCustomID) {
+        selectedVertices[i].customID = ev.target.value;
+      }
     }
     updateCall = true;
   }

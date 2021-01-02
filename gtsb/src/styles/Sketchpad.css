@@ -52,12 +52,6 @@
   text-align: left;
 }
 
-#custom_id_label{
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 /*------------------Sketchpad-----------------------*/
 #sketchpad_container{
   flex-basis: 50%;
