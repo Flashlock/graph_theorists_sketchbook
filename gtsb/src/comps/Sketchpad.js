@@ -112,7 +112,7 @@ class Sketchpad extends React.Component {
 
     if (updateCall && !updateCallers[1]) {
       //perform action
-      if(actionCommand) {
+      if (actionCommand) {
         //was delete pressed?
         if (actionCommand === 'Delete') {
           //select all edges attached to vertices
@@ -129,57 +129,61 @@ class Sketchpad extends React.Component {
         }
 
         //was clear pad pressed?
-        else if (actionCommand === 'Clear Pad') {
-          //delete all
-          selectedVertices = graphVertices;
-          selectedEdges = graphEdges;
+        else
+          if (actionCommand === 'Clear Pad') {
+            //delete all
+            selectedVertices = graphVertices;
+            selectedEdges = graphEdges;
 
-          this.deleteEdges();
-          this.deleteVertices();
+            this.deleteEdges();
+            this.deleteVertices();
 
-          //set mode to draw Vertex after clear
-          commandMode = 'Draw Vertex';
-        }
-
-        //vertex data display?
-        else if (actionCommand === 'Display Vertex Data') {
-          this.displayVertexData = !this.displayVertexData;
-          for (let i = 0; i < graphVertices.length; i++) {
-            graphVertices[i].displayVertexData = this.displayVertexData;
+            //set mode to draw Vertex after clear
+            commandMode = 'Draw Vertex';
           }
-        }
 
-        //reset ids?
-        else if (actionCommand === 'Reset IDs') {
-          this.vertexIDCount = graphVertices.length;
-          this.edgeIDCount = graphEdges.length;
-          for (let i = 0; i < graphVertices.length; i++) {
-            graphVertices[i].id = i;
-            graphVertices[i].customID = null;
-          }
-          for (let i = 0; i < graphEdges.length; i++) {
-            graphEdges[i].id = i;
-          }
-        }
-
-        //locate bridges?
-        else if (actionCommand === 'Bridge ID') {
-          this.bridgeID = !this.bridgeID;
-          if (this.bridgeID) {
-            this.locateBridges();
-          } else {
-            //toggle all bridges off
-            for (let i = 0; i < graphEdges.length; i++) {
-              graphEdges[i].isBridge = false;
+          //vertex data display?
+          else
+            if (actionCommand === 'Display Vertex Data') {
+              this.displayVertexData = !this.displayVertexData;
+              for (let i = 0; i < graphVertices.length; i++) {
+                graphVertices[i].displayVertexData = this.displayVertexData;
+              }
             }
-          }
-        }
+
+            //reset ids?
+            else
+              if (actionCommand === 'Reset IDs') {
+                this.vertexIDCount = graphVertices.length;
+                this.edgeIDCount = graphEdges.length;
+                for (let i = 0; i < graphVertices.length; i++) {
+                  graphVertices[i].id = i;
+                  graphVertices[i].customID = null;
+                }
+                for (let i = 0; i < graphEdges.length; i++) {
+                  graphEdges[i].id = i;
+                }
+              }
+
+              //locate bridges?
+              else
+                if (actionCommand === 'Bridge ID') {
+                  this.bridgeID = !this.bridgeID;
+                  if (this.bridgeID) {
+                    this.locateBridges();
+                  } else {
+                    //toggle all bridges off
+                    for (let i = 0; i < graphEdges.length; i++) {
+                      graphEdges[i].isBridge = false;
+                    }
+                  }
+                }
 
         actionCommand = null;
       }
 
       //coloring?
-      if (selectedColor && (selectedVertices.length > 0 || selectedEdges.length > 0)) {
+      if (commandMode === 'Selector' && selectedColor && (selectedVertices.length > 0 || selectedEdges.length > 0)) {
         for (let i = 0; i < selectedVertices.length; i++) {
           selectedVertices[i].color = selectedColor.color;
         }
