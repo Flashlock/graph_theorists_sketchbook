@@ -162,6 +162,19 @@ class GraphData extends React.Component {
     );
   }
 
+  update() {
+    if (updateCall && !updateCallers[0] && updateCallers[1]) {
+      updateCallers[0] = true;
+      this.setState(this.state);
+    }
+  }
+
+  receiveAction = (action) => {
+    actionCommand = action;
+    updateCall = true;
+  }
+
+  //-----------------Matrices------------------------//
   renderMatrix = () => {
     if (this.matrixDisplay === 'Adjacency')
       return this.adjMatrixRenderer();
@@ -169,45 +182,6 @@ class GraphData extends React.Component {
       if (this.matrixDisplay === 'Laplacian')
         return this.laplacianMatrixRenderer();
     return null;
-  }
-
-  switchMatrix = () => {
-    if (this.matrixDisplay === 'Matrix Off')
-      this.matrixDisplay = 'Adjacency';
-    else
-      if (this.matrixDisplay === 'Adjacency')
-        this.matrixDisplay = 'Laplacian';
-      else
-        this.matrixDisplay = 'Matrix Off';
-    this.setState(this.state);
-  }
-
-  laplacianMatrixRenderer() {
-    const laplacian = this.findLaplacianMatrix();
-    if (laplacian.length === 0) return null;
-    return e(
-        'table',
-        {
-          key: 'laplacian_matrix'
-        },
-        [
-          this.matrixToDom(laplacian, 'laplacian_matrix')
-        ]
-    );
-  }
-
-  adjMatrixRenderer() {
-    const adjMatrix = this.findAdjMatrix();
-    if (adjMatrix.length === 0) return null;
-    return e(
-        'table',
-        {
-          key: 'adj_matrix',
-        },
-        [
-          this.matrixToDom(adjMatrix, 'adj_matrix')
-        ]
-    );
   }
 
   matrixToDom(matrix, key){
@@ -240,6 +214,68 @@ class GraphData extends React.Component {
     );
   }
 
+  switchMatrix = () => {
+    if (this.matrixDisplay === 'Matrix Off')
+      this.matrixDisplay = 'Adjacency';
+    else
+      if (this.matrixDisplay === 'Adjacency')
+        this.matrixDisplay = 'Laplacian';
+      else
+        this.matrixDisplay = 'Matrix Off';
+    this.setState(this.state);
+  }
+
+  //Laplacian Matrix
+  laplacianMatrixRenderer() {
+    const laplacian = this.findLaplacianMatrix();
+    if (laplacian.length === 0) return null;
+    return e(
+        'table',
+        {
+          key: 'laplacian_matrix'
+        },
+        [
+          this.matrixToDom(laplacian, 'laplacian_matrix')
+        ]
+    );
+  }
+
+  findLaplacianMatrix() {
+    const adjMatrix = this.findAdjMatrix();
+    const diagDegMatrix = this.findDiagDegMatrix();
+    //L = D - A
+    let laplacian = this.makeZeroMatrix(adjMatrix.length);
+    for (let i = 0; i < adjMatrix.length; i++) {
+      for (let j = 0; j < adjMatrix.length; j++) {
+        laplacian[i].content[j].content = diagDegMatrix[i].content[j].content - adjMatrix[i].content[j].content;
+      }
+    }
+    return laplacian;
+  }
+
+  findDiagDegMatrix() {
+    let diagDegMatrix = this.makeZeroMatrix(graphVertices.length);
+    for (let i = 0; i < graphVertices.length; i++) {
+      diagDegMatrix[i].content[i].content = usingInDegree ? graphVertices[i].inDegree : graphVertices[i].outDegree;
+    }
+    return diagDegMatrix;
+  }
+
+  //Adjacency Matrix
+  adjMatrixRenderer() {
+    const adjMatrix = this.findAdjMatrix();
+    if (adjMatrix.length === 0) return null;
+    return e(
+        'table',
+        {
+          key: 'adj_matrix',
+        },
+        [
+          this.matrixToDom(adjMatrix, 'adj_matrix')
+        ]
+    );
+  }
+
   findAdjMatrix() {
     //instantiate blank matrix
     let adjMatrix = this.makeZeroMatrix(graphVertices.length);
@@ -260,27 +296,6 @@ class GraphData extends React.Component {
     return adjMatrix;
   }
 
-  findDiagDegMatrix() {
-    let diagDegMatrix = this.makeZeroMatrix(graphVertices.length);
-    for (let i = 0; i < graphVertices.length; i++) {
-      diagDegMatrix[i].content[i].content = usingInDegree ? graphVertices[i].inDegree : graphVertices[i].outDegree;
-    }
-    return diagDegMatrix;
-  }
-
-  findLaplacianMatrix() {
-    const adjMatrix = this.findAdjMatrix();
-    const diagDegMatrix = this.findDiagDegMatrix();
-    //L = D - A
-    let laplacian = this.makeZeroMatrix(adjMatrix.length);
-    for (let i = 0; i < adjMatrix.length; i++) {
-      for (let j = 0; j < adjMatrix.length; j++) {
-        laplacian[i].content[j].content = diagDegMatrix[i].content[j].content - adjMatrix[i].content[j].content;
-      }
-    }
-    return laplacian;
-  }
-
   makeZeroMatrix(length) {
     let zMatrix = [];
     for (let i = 0; i < length; i++) {
@@ -292,6 +307,7 @@ class GraphData extends React.Component {
     return zMatrix;
   }
 
+  //----------------------Custom ID---------------------//
   showSelectedVertex = () => {
     let selectedVertex = '';
     if (commandMode === 'Selector') {
@@ -343,13 +359,7 @@ class GraphData extends React.Component {
     updateCall = true;
   }
 
-  update() {
-    if (updateCall && !updateCallers[0] && updateCallers[1]) {
-      updateCallers[0] = true;
-      this.setState(this.state);
-    }
-  }
-
+  //----------------------Bipartite----------------------//
   determineBipartite = () => {
     let visitedVertices = [];
     this.isBP = true;
@@ -393,6 +403,7 @@ class GraphData extends React.Component {
     return graphVertices.filter((vertex) => !vistedVertices.find((v) => v.id === vertex.id));
   }
 
+  //------------------------Component Finder--------------------//
   //returns an array of arrays for vertices that make up each component
   findComponents = () => {
     let components = [];
@@ -417,11 +428,6 @@ class GraphData extends React.Component {
       const adj = this.determineAdjVertex(currentVertex, edge.vertex1, edge.vertex2);
       this.findComponentHelper(adj, visitedVertices, componentVertices);
     }
-  }
-
-  receiveAction = (action) => {
-    actionCommand = action;
-    updateCall = true;
   }
 }
 

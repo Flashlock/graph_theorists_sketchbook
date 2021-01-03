@@ -58,7 +58,7 @@ class CommandContainer extends React.Component {
                       e(
                           'button',
                           {
-                            onClick: this.receiveCommand.bind(this,'Draw Vertex'),
+                            onClick: this.receiveCommand.bind(this, 'Draw Vertex'),
                             className: 'command_button',
                             id: 'draw_vertex',
                             key: 'draw_vertex'
@@ -70,7 +70,7 @@ class CommandContainer extends React.Component {
                       e(
                           'button',
                           {
-                            onClick: this.receiveCommand.bind(this,'Draw Edge'),
+                            onClick: this.receiveCommand.bind(this, 'Draw Edge'),
                             className: 'command_button',
                             id: 'draw_edge',
                             key: 'draw_edge'
@@ -82,7 +82,7 @@ class CommandContainer extends React.Component {
                       e(
                           'button',
                           {
-                            onClick: this.receiveCommand.bind(this,'Draw Arc'),
+                            onClick: this.receiveCommand.bind(this, 'Draw Arc'),
                             className: 'command_button',
                             id: 'draw_arc',
                             key: 'draw_arc'
@@ -94,19 +94,29 @@ class CommandContainer extends React.Component {
                       e(
                           'button',
                           {
-                            onClick: this.receiveCommand.bind(this,'Selector'),
+                            onClick: this.receiveCommand.bind(this, 'Selector'),
                             className: 'command_button',
                             id: 'selector',
                             key: 'selector'
                           },
                           'Selector'
                       ),
+                      e(
+                          'button',
+                          {
+                            onClick: this.receiveAction.bind(this, 'Deselect'),
+                            className: 'command_button',
+                            id: 'deselect',
+                            key: 'deselect'
+                          },
+                          'Deselect All'
+                      ),
                       //Grabber Button
                       // eslint-disable-next-line no-undef
                       e(
                           'button',
                           {
-                            onClick: this.receiveCommand.bind(this,'Grabber'),
+                            onClick: this.receiveCommand.bind(this, 'Grabber'),
                             className: 'command_button',
                             id: 'grabber',
                             key: 'grabber'
@@ -118,7 +128,7 @@ class CommandContainer extends React.Component {
                       e(
                           'button',
                           {
-                            onClick: this.receiveAction.bind(this,'Delete'),
+                            onClick: this.receiveAction.bind(this, 'Delete'),
                             className: 'command_button',
                             id: 'delete',
                             key: 'delete'
@@ -255,6 +265,16 @@ class CommandContainer extends React.Component {
     }
   }
 
+  receiveAction = (action) => {
+    actionCommand = action;
+    updateCall = true;
+  }
+
+  receiveCommand = (command) => {
+    commandMode = command;
+    updateCall = true;
+  }
+
   ColorRenderer = (color) => {
     const isSelected = selectedColor && selectedColor.palette === color.palette && selectedColor.id === color.id;
     const style = {
@@ -293,16 +313,6 @@ class CommandContainer extends React.Component {
 
   changeArrowColor = () => {
     arrowColor = document.getElementById('arrow_color_picker').value;
-    updateCall = true;
-  }
-
-  receiveAction = (action) => {
-    actionCommand = action;
-    updateCall = true;
-  }
-
-  receiveCommand = (command) => {
-    commandMode = command;
     updateCall = true;
   }
 }

@@ -6,7 +6,7 @@ const e = React.createElement;
 
 //basically the state the user's in, allowing for multiple actions
 let commandMode = 'Draw Vertex';
-//one time actions, typically used in conjunction with an update call
+//one time actions
 let actionCommand;
 let updateCall = false;
 let updateCallers = [false, false, false];
@@ -171,10 +171,19 @@ class Sketchpad extends React.Component {
                       graphEdges[i].isBridge = false;
                     }
                   }
-                } else
+                }
+                //toggle inout degree
+                else
                   if (actionCommand === 'InOut Degree') {
                     usingInDegree = !usingInDegree;
                   }
+
+                  //deselect all
+                  else
+                    if (actionCommand === 'Deselect') {
+                      this.deselectElements(selectedVertices);
+                      this.deselectElements(selectedEdges);
+                    }
 
         actionCommand = null;
       }
@@ -764,6 +773,7 @@ class Sketchpad extends React.Component {
     console.log('here');
   }
 
+  //---------------------Window Management---------------------//
   resizeWindow = () => {
     //loop through vertices, recalculate their x, y based on aspects, reposition all edges
     this.findPadAndRect();
@@ -778,12 +788,14 @@ class Sketchpad extends React.Component {
     this.setState(this.state);
   }
 
-  findPadAndRect(){
-    if(!this.sketchPad) {
+  findPadAndRect() {
+    if (!this.sketchPad) {
       this.sketchPad = document.getElementById('sketchpad');
     }
-    if(this.sketchPad) {
+    if (this.sketchPad) {
       this.padRect = this.sketchPad.getBoundingClientRect();
+      //fix the sketchpad containers height
+      document.getElementById('sketchpad_container').style.height = this.padRect.height.toString() + 'px';
     }
   }
 }
