@@ -132,10 +132,17 @@ class GraphData extends React.Component {
     );
   }
 
-  laplacianMatrixRenderer(){
-    const adjMatrix=this.findAdjMatrix();
-    const degMatrix=this.findDegMatrix();
-    // console.log(degMatrix);
+  laplacianMatrixRenderer() {
+    const laplacian = this.findLaplacianMatrix();
+    return e(
+        'table',
+        {
+          key: 'laplacian_matrix'
+        },
+        [
+            this.matrixToDom(laplacian, 'laplacian_matrix')
+        ]
+    );
   }
 
   adjMatrixRenderer() {
@@ -201,33 +208,25 @@ class GraphData extends React.Component {
     return adjMatrix;
   }
 
-  findDegMatrix(){
-    let degMatrix=this.makeZeroMatrix(graphVertices.length);
-    for(let i=0;i<graphEdges.length;i++){
-      const v1Index = graphVertices.findIndex((vertex) => vertex.id === graphEdges[i].vertex1.id);
-      const v2Index = graphVertices.findIndex((vertex) => vertex.id === graphEdges[i].vertex2.id);
-      if(graphEdges[i].isArc) {
-        //which vertex is the target?
-        let into, out;
-        if (graphEdges[i].vertex1.id === graphEdges[i].targetVertex.id) {
-          into = v2Index;
-          out = v1Index;
-        } else {
-          into = v1Index;
-          out = v2Index;
-        }
-        if (usingInDegree) {
-          degMatrix[into].content[out].content++;
-        } else {
-          degMatrix[out].content[into].content++;
-        }
-      }
-      else{
-        degMatrix[v1Index].content[v2Index].content++;
-        degMatrix[v2Index].content[v1Index].content++;
+  findDiagDegMatrix() {
+    let diagDegMatrix = this.makeZeroMatrix(graphVertices.length);
+    for (let i = 0; i < graphVertices.length; i++) {
+      diagDegMatrix[i].content[i].content = usingInDegree ? graphVertices[i].inDegree : graphVertices[i].outDegree;
+    }
+    return diagDegMatrix;
+  }
+
+  findLaplacianMatrix() {
+    const adjMatrix = this.findAdjMatrix();
+    const diagDegMatrix = this.findDiagDegMatrix();
+    //L = D - A
+    let laplacian = this.makeZeroMatrix(adjMatrix.length);
+    for (let i = 0; i < adjMatrix.length; i++) {
+      for (let j = 0; j < adjMatrix.length; j++) {
+        laplacian[i].content[j].content = diagDegMatrix[i].content[j].content - adjMatrix[i].content[j].content;
       }
     }
-    return degMatrix;
+    return laplacian;
   }
 
   makeZeroMatrix(length) {

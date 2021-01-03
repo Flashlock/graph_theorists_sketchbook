@@ -231,7 +231,6 @@ class Sketchpad extends React.Component {
     const id = 'v' + vertex.id.toString();
 
     if (vertex.displayVertexData) {
-      console.log(vertex.inDegree);
       return e(
           'div',
           {
