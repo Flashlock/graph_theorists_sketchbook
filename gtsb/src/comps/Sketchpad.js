@@ -231,6 +231,7 @@ class Sketchpad extends React.Component {
     const id = 'v' + vertex.id.toString();
 
     if (vertex.displayVertexData) {
+      console.log(vertex.inDegree);
       return e(
           'div',
           {
@@ -250,7 +251,7 @@ class Sketchpad extends React.Component {
                   className: 'vertex_id',
                   key: 'idDisplay' + id,
                 },
-                vertex.customID?vertex.customID.toString(): vertex.id.toString()
+                vertex.customID ? vertex.customID.toString() : vertex.id.toString()
             ),
             e(
                 'div',
@@ -258,7 +259,7 @@ class Sketchpad extends React.Component {
                   className: 'vertex_deg',
                   key: 'degDisplay' + id
                 },
-                vertex.edges.length.toString()
+                usingInDegree ? vertex.inDegree.toString() : vertex.outDegree.toString()
             )
           ]
       );
@@ -409,7 +410,9 @@ class Sketchpad extends React.Component {
       yRatio: ev.clientY / this.padRect.height,
       edges: [],
       displayVertexData: this.displayVertexData,
-      color: this.defaultVertexColor
+      color: this.defaultVertexColor,
+      inDegree: 0,
+      outDegree: 0
     }
 
     graphVertices.push(vertex);
@@ -640,11 +643,17 @@ class Sketchpad extends React.Component {
           // check command mode => draw edge, arc
           if (commandMode === 'Draw Edge') {
             this.drawEdge(selectedVertices[0], selectedVertices[1]);
+            selectedVertices[0].inDegree++;
+            selectedVertices[0].outDegree++;
+            selectedVertices[1].inDegree++;
+            selectedVertices[1].outDegree++;
           } else
             if (commandMode === 'Draw Arc') {
               const arc = this.drawEdge(selectedVertices[1], selectedVertices[0]);
               arc.isArc = true;
               arc.targetVertex = selectedVertices[1];
+              selectedVertices[1].inDegree++;
+              selectedVertices[0].outDegree++;
             } else {
               console.log("Whoopsie. Selecting an element in: ", commandMode);
             }
@@ -704,6 +713,20 @@ class Sketchpad extends React.Component {
       const v2 = edge.vertex2;
       v1.edges = v1.edges.filter((e) => e.id !== edge.id);
       v2.edges = v2.edges.filter((e) => e.id !== edge.id);
+      if (edge.isArc) {
+        if (v1.id === edge.targetVertex.id) {
+          v1.inDegree--;
+          v2.outDegree--;
+        } else {
+          v1.outDegree--;
+          v2.inDegree--;
+        }
+      } else {
+        v1.inDegree--;
+        v1.outDegree--;
+        v2.inDegree--;
+        v2.outDegree--;
+      }
     }
     selectedEdges = [];
     if (this.bridgeID)

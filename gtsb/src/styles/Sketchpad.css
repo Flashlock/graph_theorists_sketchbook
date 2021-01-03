@@ -52,6 +52,11 @@
   text-align: left;
 }
 
+#graph_counts{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
 /*------------------Sketchpad-----------------------*/
 #sketchpad_container{
   flex-basis: 50%;

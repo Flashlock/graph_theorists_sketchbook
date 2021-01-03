@@ -1,3 +1,5 @@
+let usingInDegree = true;
+
 // eslint-disable-next-line no-undef
 class GraphData extends React.Component {
   constructor(props) {
@@ -83,41 +85,160 @@ class GraphData extends React.Component {
               ]
           ),
           this.showSelectedVertex(),
-          e(
-              'h3',
-              {
-                key: 'vertex_count',
-                className: 'graph_data',
-                id: 'vertex_count',
-              },
-              vertexCount,
-          ),
-          e(
-              'h3',
-              {
-                key: 'edge_count',
-                className: 'graph_data'
-              },
-              edgeCount
-          ),
-          e(
-              'h3',
-              {
-                key: 'is_bp',
-                className: 'graph_data'
-              },
-              'BP = ' + this.isBP
-          ),
-          e(
-              'h3',
-              {
-                key: 'component_count',
-                className: 'graph_data'
-              },
-              'Components = ' + components.length
-          )
+            e(
+                'div',
+                {
+                  key: 'graph_counts',
+                  id: 'graph_counts'
+                },
+                [
+                  e(
+                      'h3',
+                      {
+                        key: 'vertex_count',
+                        className: 'graph_data',
+                        id: 'vertex_count',
+                      },
+                      vertexCount,
+                  ),
+                  e(
+                      'h3',
+                      {
+                        key: 'edge_count',
+                        className: 'graph_data'
+                      },
+                      edgeCount
+                  ),
+                  e(
+                      'h3',
+                      {
+                        key: 'is_bp',
+                        className: 'graph_data'
+                      },
+                      'BP = ' + this.isBP
+                  ),
+                  e(
+                      'h3',
+                      {
+                        key: 'component_count',
+                        className: 'graph_data'
+                      },
+                      'Comps = ' + components.length
+                  )
+                ]
+            ),
+            this.laplacianMatrixRenderer()
         ]
     );
+  }
+
+  laplacianMatrixRenderer(){
+    const adjMatrix=this.findAdjMatrix();
+    const degMatrix=this.findDegMatrix();
+    // console.log(degMatrix);
+  }
+
+  adjMatrixRenderer() {
+    const adjMatrix = this.findAdjMatrix();
+    return e(
+        'table',
+        {
+          key: 'adj_matrix',
+        },
+        [
+          this.matrixToDom(adjMatrix, 'adj_matrix')
+        ]
+    );
+  }
+
+  matrixToDom(matrix, key){
+    return e(
+        'tbody',
+        {
+          key: key
+        },
+        [
+          matrix.map((row)=>{
+            return e(
+                'tr',
+                {
+                  key: row.id.toString()
+                },
+                [
+                  row.content.map((entry)=>{
+                    return e(
+                        'td',
+                        {
+                          key: entry.id.toString()
+                        },
+                        entry.content
+                    )
+                  })
+                ]
+            )
+          })
+        ]
+    );
+  }
+
+  findAdjMatrix() {
+    //instantiate blank matrix
+    let adjMatrix = this.makeZeroMatrix(graphVertices.length);
+    for (let i = 0; i < graphEdges.length; i++) {
+      const v1Index = graphVertices.findIndex((vertex) => vertex.id === graphEdges[i].vertex1.id);
+      const v2Index = graphVertices.findIndex((vertex) => vertex.id === graphEdges[i].vertex2.id);
+      if (graphEdges[i].isArc) {
+        //which vertex is the target?
+        if (graphEdges[i].vertex1.id === graphEdges[i].targetVertex.id)
+          adjMatrix[v2Index].content[v1Index].content = 1;
+        else
+          adjMatrix[v1Index].content[v2Index].content = 1;
+      } else {
+        adjMatrix[v1Index].content[v2Index].content = 1;
+        adjMatrix[v2Index].content[v1Index].content = 1;
+      }
+    }
+    return adjMatrix;
+  }
+
+  findDegMatrix(){
+    let degMatrix=this.makeZeroMatrix(graphVertices.length);
+    for(let i=0;i<graphEdges.length;i++){
+      const v1Index = graphVertices.findIndex((vertex) => vertex.id === graphEdges[i].vertex1.id);
+      const v2Index = graphVertices.findIndex((vertex) => vertex.id === graphEdges[i].vertex2.id);
+      if(graphEdges[i].isArc) {
+        //which vertex is the target?
+        let into, out;
+        if (graphEdges[i].vertex1.id === graphEdges[i].targetVertex.id) {
+          into = v2Index;
+          out = v1Index;
+        } else {
+          into = v1Index;
+          out = v2Index;
+        }
+        if (usingInDegree) {
+          degMatrix[into].content[out].content++;
+        } else {
+          degMatrix[out].content[into].content++;
+        }
+      }
+      else{
+        degMatrix[v1Index].content[v2Index].content++;
+        degMatrix[v2Index].content[v1Index].content++;
+      }
+    }
+    return degMatrix;
+  }
+
+  makeZeroMatrix(length) {
+    let zMatrix = [];
+    for (let i = 0; i < length; i++) {
+      zMatrix[i] = { id: 'm_row' + i.toString(), content: [] };
+      for (let j = 0; j < length; j++) {
+        zMatrix[i].content.push({ id: 'm_entry' + i.toString() + ', ' + j.toString(), content: 0 });
+      }
+    }
+    return zMatrix;
   }
 
   showSelectedVertex = () => {
@@ -174,7 +295,7 @@ class GraphData extends React.Component {
   }
 
   update() {
-    if (updateCall && !updateCallers[0]) {
+    if (updateCall && !updateCallers[0] && updateCallers[1]) {
       updateCallers[0] = true;
       this.setState(this.state);
     }

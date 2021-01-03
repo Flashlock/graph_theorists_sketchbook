@@ -249,7 +249,7 @@ class CommandContainer extends React.Component {
 
   update() {
     //if there was an update call I need to check in
-    if (updateCall && !updateCallers[2]) {
+    if (updateCall && !updateCallers[2] && updateCallers[1]) {
       updateCallers[2] = true;
       this.setState(this.state);
     }
