@@ -171,7 +171,10 @@ class Sketchpad extends React.Component {
                       graphEdges[i].isBridge = false;
                     }
                   }
-                }
+                } else
+                  if (actionCommand === 'InOut Degree') {
+                    usingInDegree = !usingInDegree;
+                  }
 
         actionCommand = null;
       }

@@ -6,6 +6,7 @@ class GraphData extends React.Component {
     super(props);
     this.state = {};
     this.isBP = false;
+    this.matrixDisplay = 'Off';
     this.maxLengthCustomID = 30;
     setInterval(this.update.bind(this), 33);
   }
@@ -81,7 +82,17 @@ class GraphData extends React.Component {
                       key: 'bridge_ID'
                     },
                     'Locate Bridges'
-                )
+                ),
+                  e(
+                      'button',
+                      {
+                        onClick: this.receiveAction.bind(this, 'InOut Degree'),
+                        className: 'command_button',
+                        id: 'inout_degree',
+                        key: 'inout_degree'
+                      },
+                      usingInDegree?'In Degree': 'Out Degree'
+                  )
               ]
           ),
           this.showSelectedVertex(),
@@ -127,9 +138,48 @@ class GraphData extends React.Component {
                   )
                 ]
             ),
-            this.laplacianMatrixRenderer()
+            e(
+                'div',
+                {
+                  key: 'matrix_data',
+                  id: 'matrix_data'
+                },
+                [
+                    e(
+                        'button',
+                        {
+                          key: 'matrix_toggle',
+                          id: 'matrix_toggle',
+                          className: 'command_button',
+                          onClick: this.switchMatrix.bind(this)
+                        },
+                        this.matrixDisplay
+                    ),
+                    this.renderMatrix()
+                ]
+            )
         ]
     );
+  }
+
+  renderMatrix = () => {
+    if (this.matrixDisplay === 'Adjacency')
+      return this.adjMatrixRenderer();
+    else
+      if (this.matrixDisplay === 'Laplacian')
+        return this.laplacianMatrixRenderer();
+    return null;
+  }
+
+  switchMatrix = () => {
+    if (this.matrixDisplay === 'Off')
+      this.matrixDisplay = 'Adjacency';
+    else
+      if (this.matrixDisplay === 'Adjacency')
+        this.matrixDisplay = 'Laplacian';
+      else
+        this.matrixDisplay = 'Off';
+    this.setState(this.state);
   }
 
   laplacianMatrixRenderer() {

@@ -29,11 +29,11 @@
 
 #graph_data_comp {
   text-align: center;
-  flex: 1;
+  /*flex: 1;*/
 }
 
 .graph_data{
-  flex: 1;
+  /*flex: 1;*/
   text-align: left;
 }
 
@@ -43,7 +43,6 @@
 
 #data_toggles{
   display: flex;
-  justify-content: space-between;
 }
 
 #custom_id{
