@@ -6,7 +6,7 @@ class GraphData extends React.Component {
     super(props);
     this.state = {};
     this.isBP = false;
-    this.matrixDisplay = 'Off';
+    this.matrixDisplay = 'Matrix Off';
     this.maxLengthCustomID = 30;
     setInterval(this.update.bind(this), 33);
   }
@@ -172,31 +172,33 @@ class GraphData extends React.Component {
   }
 
   switchMatrix = () => {
-    if (this.matrixDisplay === 'Off')
+    if (this.matrixDisplay === 'Matrix Off')
       this.matrixDisplay = 'Adjacency';
     else
       if (this.matrixDisplay === 'Adjacency')
         this.matrixDisplay = 'Laplacian';
       else
-        this.matrixDisplay = 'Off';
+        this.matrixDisplay = 'Matrix Off';
     this.setState(this.state);
   }
 
   laplacianMatrixRenderer() {
     const laplacian = this.findLaplacianMatrix();
+    if (laplacian.length === 0) return null;
     return e(
         'table',
         {
           key: 'laplacian_matrix'
         },
         [
-            this.matrixToDom(laplacian, 'laplacian_matrix')
+          this.matrixToDom(laplacian, 'laplacian_matrix')
         ]
     );
   }
 
   adjMatrixRenderer() {
     const adjMatrix = this.findAdjMatrix();
+    if (adjMatrix.length === 0) return null;
     return e(
         'table',
         {
@@ -321,7 +323,6 @@ class GraphData extends React.Component {
                     type: 'text',
                     key: 'custom_id_input',
                     id: 'custom_id_input',
-                    maxLength: '30',
                     value: selectedVertices[0] ? selectedVertices[0].customID : '',
                     placeholder: 'Input Custom ID',
                     onInput: this.applyCustomVertexID,
@@ -335,7 +336,6 @@ class GraphData extends React.Component {
 
   applyCustomVertexID = (ev) => {
     for (let i = 0; i < selectedVertices.length; i++) {
-      console.log(ev.target.value.length);
       if (ev.target.value.length <= this.maxLengthCustomID) {
         selectedVertices[i].customID = ev.target.value;
       }
