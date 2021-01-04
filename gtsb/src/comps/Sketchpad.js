@@ -16,6 +16,8 @@ document.getElementById('pad_wrapper').addEventListener('mousemove', (event)=> {
   mouseMoveCTX = event;
 });
 
+let buttonSelectedColor = '#B37212';
+
 let graphVertices = [];
 let graphEdges = [];
 let selectedVertices = [];
@@ -46,7 +48,7 @@ class Sketchpad extends React.Component {
     this.displayVertexData = false;
     this.bridgeID = false;
 
-    this.defaultVertexColor = 'blue';
+    this.defaultVertexColor = '#33AAFF';
     this.defaultEdgeColor = 'black';
 
     window.addEventListener('resize', this.resizeWindow);

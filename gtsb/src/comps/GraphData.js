@@ -104,7 +104,7 @@ class GraphData extends React.Component {
                 },
                 [
                   e(
-                      'h3',
+                      'p',
                       {
                         key: 'vertex_count',
                         className: 'graph_data',
@@ -113,7 +113,7 @@ class GraphData extends React.Component {
                       vertexCount,
                   ),
                   e(
-                      'h3',
+                      'p',
                       {
                         key: 'edge_count',
                         className: 'graph_data'
@@ -121,7 +121,7 @@ class GraphData extends React.Component {
                       edgeCount
                   ),
                   e(
-                      'h3',
+                      'p',
                       {
                         key: 'is_bp',
                         className: 'graph_data'
@@ -129,7 +129,7 @@ class GraphData extends React.Component {
                       'BP = ' + this.isBP
                   ),
                   e(
-                      'h3',
+                      'p',
                       {
                         key: 'component_count',
                         className: 'graph_data'
