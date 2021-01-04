@@ -45,8 +45,6 @@ class Sketchpad extends React.Component {
     this.edgeIDCount = 0;
     //switches
     this.canDrawVertex = true;
-    this.displayVertexData = false;
-    this.bridgeID = false;
 
     this.defaultVertexColor = '#33AAFF';
     this.defaultEdgeColor = 'black';
@@ -141,7 +139,22 @@ class Sketchpad extends React.Component {
           //vertex data display?
           else
             if (actionCommand === 'Display Vertex Data') {
-              this.displayVertexData = !this.displayVertexData;
+              switch (displayVertexData){
+                case 'Data':
+                  displayVertexData='ID';
+                  break;
+                case 'ID':
+                  displayVertexData='Deg';
+                  break;
+                case 'Deg':
+                  displayVertexData='ID/Deg';
+                  break;
+                case 'ID/Deg':
+                  displayVertexData='Data';
+                  break;
+                default:
+                  break;
+              }
               for (let i = 0; i < graphVertices.length; i++) {
                 graphVertices[i].displayVertexData = this.displayVertexData;
               }
@@ -164,8 +177,8 @@ class Sketchpad extends React.Component {
               //locate bridges?
               else
                 if (actionCommand === 'Bridge ID') {
-                  this.bridgeID = !this.bridgeID;
-                  if (this.bridgeID) {
+                  bridgeID = !bridgeID;
+                  if (bridgeID) {
                     this.locateBridges();
                   } else {
                     //toggle all bridges off
@@ -244,51 +257,61 @@ class Sketchpad extends React.Component {
     }
     const id = 'v' + vertex.id.toString();
 
-    if (vertex.displayVertexData) {
-      return e(
-          'div',
-          {
-            style: style,
-            id: id,
-            key: id,
-            className: 'vertex',
-            onMouseEnter: this.mouseEnterElement.bind(this, true, vertex),
-            onMouseLeave: this.mouseExitElement.bind(this, true, vertex),
-            onMouseDown: this.assignVertex.bind(this, vertex),
-            onMouseUp: this.assignVertex.bind(this, null)
-          },
-          [
-            e(
-                'span',
-                {
-                  className: 'vertex_id',
-                  key: 'idDisplay' + id,
-                },
-                vertex.customID ? vertex.customID.toString() : vertex.id.toString()
-            ),
-            e(
-                'div',
-                {
-                  className: 'vertex_deg',
-                  key: 'degDisplay' + id
-                },
-                usingInDegree ? vertex.inDegree.toString() : vertex.outDegree.toString()
-            )
-          ]
-      );
-    }
     return e(
         'div',
         {
           style: style,
           id: id,
           key: id,
+          className: 'vertex',
           onMouseEnter: this.mouseEnterElement.bind(this, true, vertex),
           onMouseLeave: this.mouseExitElement.bind(this, true, vertex),
           onMouseDown: this.assignVertex.bind(this, vertex),
           onMouseUp: this.assignVertex.bind(this, null)
-        }
+        },
+        [
+            this.VertexIDRenderer(vertex, id),
+            this.VertexDegRenderer(vertex, id)
+        ]
     );
+  }
+
+  VertexIDRenderer = (vertex, id) => {
+    if (displayVertexData === 'ID' || displayVertexData === 'ID/Deg') {
+      const style = displayVertexData === 'ID' ? {
+        top: '-1.2em'
+      } : {
+        top: '-.6em'
+      }
+      return e(
+          'div',
+          {
+            className: 'vertex_id',
+            key: 'idDisplay' + id,
+            style: style
+          },
+          vertex.customID ? vertex.customID.toString() : vertex.id.toString()
+      );
+    }
+  }
+
+  VertexDegRenderer = (vertex, id) => {
+    if (displayVertexData === 'Deg' || displayVertexData === 'ID/Deg') {
+      const style = displayVertexData === 'Deg' ? {
+        top: '-1.2em'
+      } : {
+        top: '.8em'
+      }
+      return e(
+          'div',
+          {
+            className: 'vertex_deg',
+            key: 'degDisplay' + id,
+            style: style
+          },
+          usingInDegree ? vertex.inDegree.toString() : vertex.outDegree.toString()
+      );
+    }
   }
 
   EdgeRenderer = (edge) => {
@@ -523,7 +546,7 @@ class Sketchpad extends React.Component {
     if (!edge.isLoop) {
       vertex2.edges.push(edge);
     }
-    if (this.bridgeID) {
+    if (bridgeID) {
       //if I'm looking for bridges, did I just draw one?
       this.locateBridges();
     }
@@ -742,7 +765,7 @@ class Sketchpad extends React.Component {
       }
     }
     selectedEdges = [];
-    if (this.bridgeID)
+    if (bridgeID)
       this.locateBridges();
 
     //loop through remaining edges and reset parallel edges

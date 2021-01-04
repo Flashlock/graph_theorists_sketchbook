@@ -134,14 +134,6 @@ textarea{
   white-space: nowrap;
 }
 
-.vertex_id {
-  top: -70%;
-}
-
-.vertex_deg{
-  top: 70%;
-}
-
 .vertex_id, .vertex_deg{
   position: relative;
   color: black;

@@ -1,4 +1,6 @@
 let usingInDegree = true;
+let bridgeID = false;
+let displayVertexData = 'Data';
 
 // eslint-disable-next-line no-undef
 class GraphData extends React.Component {
@@ -61,7 +63,7 @@ class GraphData extends React.Component {
                       id: 'vertex_data',
                       key: 'vertex_data'
                     },
-                    'Vertex Data'
+                    'Vertex ' + displayVertexData
                 ),
                 e(
                     'button',
@@ -81,83 +83,83 @@ class GraphData extends React.Component {
                       id: 'bridge_ID',
                       key: 'bridge_ID'
                     },
-                    'Locate Bridges'
+                    bridgeID ? 'Bridges On' : 'Bridges Off'
                 ),
-                  e(
-                      'button',
-                      {
-                        onClick: this.receiveAction.bind(this, 'InOut Degree'),
-                        className: 'command_button',
-                        id: 'inout_degree',
-                        key: 'inout_degree'
-                      },
-                      usingInDegree?'In Degree': 'Out Degree'
-                  )
+                e(
+                    'button',
+                    {
+                      onClick: this.receiveAction.bind(this, 'InOut Degree'),
+                      className: 'command_button',
+                      id: 'inout_degree',
+                      key: 'inout_degree'
+                    },
+                    usingInDegree ? 'In Degree' : 'Out Degree'
+                )
               ]
           ),
           this.showSelectedVertex(),
-            e(
-                'div',
-                {
-                  key: 'graph_counts',
-                  id: 'graph_counts'
-                },
-                [
-                  e(
-                      'p',
-                      {
-                        key: 'vertex_count',
-                        className: 'graph_data',
-                        id: 'vertex_count',
-                      },
-                      vertexCount,
-                  ),
-                  e(
-                      'p',
-                      {
-                        key: 'edge_count',
-                        className: 'graph_data'
-                      },
-                      edgeCount
-                  ),
-                  e(
-                      'p',
-                      {
-                        key: 'is_bp',
-                        className: 'graph_data'
-                      },
-                      'BP = ' + this.isBP
-                  ),
-                  e(
-                      'p',
-                      {
-                        key: 'component_count',
-                        className: 'graph_data'
-                      },
-                      'Comps = ' + components.length
-                  )
-                ]
-            ),
-            e(
-                'div',
-                {
-                  key: 'matrix_data',
-                  id: 'matrix_data'
-                },
-                [
-                    e(
-                        'button',
-                        {
-                          key: 'matrix_toggle',
-                          id: 'matrix_toggle',
-                          className: 'command_button',
-                          onClick: this.switchMatrix.bind(this)
-                        },
-                        this.matrixDisplay
-                    ),
-                    this.renderMatrix()
-                ]
-            )
+          e(
+              'div',
+              {
+                key: 'graph_counts',
+                id: 'graph_counts'
+              },
+              [
+                e(
+                    'p',
+                    {
+                      key: 'vertex_count',
+                      className: 'graph_data',
+                      id: 'vertex_count',
+                    },
+                    vertexCount,
+                ),
+                e(
+                    'p',
+                    {
+                      key: 'edge_count',
+                      className: 'graph_data'
+                    },
+                    edgeCount
+                ),
+                e(
+                    'p',
+                    {
+                      key: 'is_bp',
+                      className: 'graph_data'
+                    },
+                    'BP = ' + this.isBP
+                ),
+                e(
+                    'p',
+                    {
+                      key: 'component_count',
+                      className: 'graph_data'
+                    },
+                    'Comps = ' + components.length
+                )
+              ]
+          ),
+          e(
+              'div',
+              {
+                key: 'matrix_data',
+                id: 'matrix_data'
+              },
+              [
+                e(
+                    'button',
+                    {
+                      key: 'matrix_toggle',
+                      id: 'matrix_toggle',
+                      className: 'command_button',
+                      onClick: this.switchMatrix.bind(this)
+                    },
+                    this.matrixDisplay
+                ),
+                this.renderMatrix()
+              ]
+          )
         ]
     );
   }
