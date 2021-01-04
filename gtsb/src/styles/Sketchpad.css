@@ -31,6 +31,7 @@ html, body{
 
 label{
   font-weight: bold;
+  font-size: 1.17em;
 }
 
 #data_container, #command_container{
@@ -63,11 +64,15 @@ button:active{
   box-sizing: border-box;
   padding: 1%;
   border-radius: 25px;
-  flex-basis: 16%;
+  flex-basis: 17%;
 }
 
 .graph_data{
   text-align: center;
+  margin: 0;
+}
+
+.data_button{
   margin: 0;
 }
 
@@ -78,29 +83,35 @@ button:active{
 }
 
 #data_toggles{
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-row-gap: .5em;
+  grid-column-gap: .5em;
+  margin: .5em;
 }
 
 #custom_id{
   display: flex;
   flex-direction: column;
   text-align: left;
-  margin: 10px;
+  margin-top: 1em;
+  margin-bottom: 1em;
 }
 
 #graph_counts{
   display: grid;
   grid-template-columns: 1fr 1fr;
   justify-content: center;
-  margin: 10px;
+  margin-top: 1em;
+  margin-bottom: 1em;
   grid-row-gap: 10px;
   font-weight: bold;
 }
 
 table {
   align-self: center;
-  border-left: 2px solid black;
-  border-right: 2px solid black;
+  border-left: 2px solid white;
+  border-right: 2px solid white;
   width: 100%;
   text-align: center;
 }
@@ -139,6 +150,8 @@ textarea{
   color: black;
   font-weight: bold;
   font-size: larger;
+  background: white;
+  border-radius: 50%;
 }
 
 /*------------------Commands-----------------------*/
@@ -146,7 +159,7 @@ textarea{
   /*border: var(--component-border);*/
   box-sizing: border-box;
   padding: 10px;
-  flex-basis: 16%;
+  flex-basis: 17%;
   border-radius: 25px;
   height: 100%;
 }
@@ -175,8 +188,7 @@ textarea{
   grid-template-columns: 1fr 1fr 1fr;
   justify-items: center;
   grid-column-gap: 10%;
-  margin-top: 5%;
-  margin-left: 5%;
+  margin: 1em;
 }
 
 .color_header{
@@ -195,13 +207,14 @@ textarea{
   height: 50%;
   border-radius: 9999px;
 }
+.color_palette:focus{
+  opacity: 1;
+}
 
 #palette_hex_code, #arrow_color_hex_code{
   letter-spacing: .25em;
 }
 
 #arrow_color{
-  margin-left: 5%;
-  margin-right: 5%;
-  margin-bottom: 5%;
+  margin: 5%;
 }

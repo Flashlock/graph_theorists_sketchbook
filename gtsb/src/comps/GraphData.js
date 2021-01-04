@@ -59,7 +59,7 @@ class GraphData extends React.Component {
                     'button',
                     {
                       onClick: this.receiveAction.bind(this, 'Display Vertex Data'),
-                      className: 'command_button',
+                      className: 'data_button',
                       id: 'vertex_data',
                       key: 'vertex_data'
                     },
@@ -69,7 +69,7 @@ class GraphData extends React.Component {
                     'button',
                     {
                       onClick: this.receiveAction.bind(this, 'Reset IDs'),
-                      className: 'command_button',
+                      className: 'data_button',
                       id: 'reset_id',
                       key: 'reset_id'
                     },
@@ -79,7 +79,7 @@ class GraphData extends React.Component {
                     'button',
                     {
                       onClick: this.receiveAction.bind(this, 'Bridge ID'),
-                      className: 'command_button',
+                      className: 'data_button',
                       id: 'bridge_ID',
                       key: 'bridge_ID'
                     },
@@ -89,7 +89,7 @@ class GraphData extends React.Component {
                     'button',
                     {
                       onClick: this.receiveAction.bind(this, 'InOut Degree'),
-                      className: 'command_button',
+                      className: 'data_button',
                       id: 'inout_degree',
                       key: 'inout_degree'
                     },

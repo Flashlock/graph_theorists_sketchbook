@@ -38,7 +38,7 @@ class Sketchpad extends React.Component {
     this.edgeSpacing = 18;
     this.loopSpacing = 12;
     this.loopDiameter = 50;
-    this.arrowSize = 10;
+    this.arrowSize = 16;
     this.grabberPadding = 10;
     //ID Counts
     this.vertexIDCount = 0;
@@ -46,7 +46,7 @@ class Sketchpad extends React.Component {
     //switches
     this.canDrawVertex = true;
 
-    this.defaultVertexColor = '#33AAFF';
+    this.defaultVertexColor = '#007CC7';
     this.defaultEdgeColor = 'black';
 
     window.addEventListener('resize', this.resizeWindow);
@@ -107,24 +107,21 @@ class Sketchpad extends React.Component {
     if (updateCall && !updateCallers[1]) {
       //perform action
       if (actionCommand) {
-        //was delete pressed?
-        if (actionCommand === 'Delete') {
-          //select all edges attached to vertices
-          for (let i = 0; i < selectedVertices.length; i++) {
-            const v = selectedVertices[i];
-            for (let j = 0; j < v.edges.length; j++) {
-              selectedEdges.push(v.edges[j]);
+        switch (actionCommand) {
+          case 'Delete':
+            //select all edges attached to vertices
+            for (let i = 0; i < selectedVertices.length; i++) {
+              const v = selectedVertices[i];
+              for (let j = 0; j < v.edges.length; j++) {
+                selectedEdges.push(v.edges[j]);
+              }
             }
-          }
 
-          //delete all selected vertices and edges
-          this.deleteVertices();
-          this.deleteEdges();
-        }
-
-        //was clear pad pressed?
-        else
-          if (actionCommand === 'Clear Pad') {
+            //delete all selected vertices and edges
+            this.deleteVertices();
+            this.deleteEdges();
+            break;
+          case 'Clear Pad':
             //delete all
             selectedVertices = graphVertices;
             selectedEdges = graphEdges;
@@ -134,71 +131,60 @@ class Sketchpad extends React.Component {
 
             //set mode to draw Vertex after clear
             commandMode = 'Draw Vertex';
-          }
-
-          //vertex data display?
-          else
-            if (actionCommand === 'Display Vertex Data') {
-              switch (displayVertexData){
-                case 'Data':
-                  displayVertexData='ID';
-                  break;
-                case 'ID':
-                  displayVertexData='Deg';
-                  break;
-                case 'Deg':
-                  displayVertexData='ID/Deg';
-                  break;
-                case 'ID/Deg':
-                  displayVertexData='Data';
-                  break;
-                default:
-                  break;
-              }
-              for (let i = 0; i < graphVertices.length; i++) {
-                graphVertices[i].displayVertexData = this.displayVertexData;
+            break;
+          case 'Display Vertex Data':
+            switch (displayVertexData) {
+              case 'Data':
+                displayVertexData = 'ID';
+                break;
+              case 'ID':
+                displayVertexData = 'Deg';
+                break;
+              case 'Deg':
+                displayVertexData = 'ID/Deg';
+                break;
+              case 'ID/Deg':
+                displayVertexData = 'Data';
+                break;
+              default:
+                break;
+            }
+            for (let i = 0; i < graphVertices.length; i++) {
+              graphVertices[i].displayVertexData = this.displayVertexData;
+            }
+            break;
+          case 'Reset IDs':
+            this.vertexIDCount = graphVertices.length;
+            this.edgeIDCount = graphEdges.length;
+            for (let i = 0; i < graphVertices.length; i++) {
+              graphVertices[i].id = i;
+              graphVertices[i].customID = null;
+            }
+            for (let i = 0; i < graphEdges.length; i++) {
+              graphEdges[i].id = i;
+            }
+            break;
+          case 'Bridge ID':
+            bridgeID = !bridgeID;
+            if (bridgeID) {
+              this.locateBridges();
+            } else {
+              //toggle all bridges off
+              for (let i = 0; i < graphEdges.length; i++) {
+                graphEdges[i].isBridge = false;
               }
             }
-
-            //reset ids?
-            else
-              if (actionCommand === 'Reset IDs') {
-                this.vertexIDCount = graphVertices.length;
-                this.edgeIDCount = graphEdges.length;
-                for (let i = 0; i < graphVertices.length; i++) {
-                  graphVertices[i].id = i;
-                  graphVertices[i].customID = null;
-                }
-                for (let i = 0; i < graphEdges.length; i++) {
-                  graphEdges[i].id = i;
-                }
-              }
-
-              //locate bridges?
-              else
-                if (actionCommand === 'Bridge ID') {
-                  bridgeID = !bridgeID;
-                  if (bridgeID) {
-                    this.locateBridges();
-                  } else {
-                    //toggle all bridges off
-                    for (let i = 0; i < graphEdges.length; i++) {
-                      graphEdges[i].isBridge = false;
-                    }
-                  }
-                }
-                //toggle inout degree
-                else
-                  if (actionCommand === 'InOut Degree') {
-                    usingInDegree = !usingInDegree;
-                  }
-
-                  //deselect all
-                  else
-                    if (actionCommand === 'Deselect') {
-                      this.deselectElements(selectedVertices);
-                      this.deselectElements(selectedEdges);
-                    }
+            break;
+          case 'InOut Degree':
+            usingInDegree = !usingInDegree;
+            break;
+          case 'Deselect':
+            this.deselectElements(selectedVertices);
+            this.deselectElements(selectedEdges);
+            break;
+          default:
+            break;
+        }
 
         actionCommand = null;
       }
@@ -279,9 +265,9 @@ class Sketchpad extends React.Component {
   VertexIDRenderer = (vertex, id) => {
     if (displayVertexData === 'ID' || displayVertexData === 'ID/Deg') {
       const style = displayVertexData === 'ID' ? {
-        top: '-1.2em'
+        top: '-1.4em'
       } : {
-        top: '-.6em'
+        top: '-.8em'
       }
       return e(
           'div',
@@ -298,9 +284,9 @@ class Sketchpad extends React.Component {
   VertexDegRenderer = (vertex, id) => {
     if (displayVertexData === 'Deg' || displayVertexData === 'ID/Deg') {
       const style = displayVertexData === 'Deg' ? {
-        top: '-1.2em'
+        top: '-1.4em'
       } : {
-        top: '.8em'
+        top: '1em'
       }
       return e(
           'div',
@@ -363,7 +349,7 @@ class Sketchpad extends React.Component {
       top: loop.vertex1.y + offset,
       left: loop.vertex1.x + offset,
       borderRadius: '50%',
-      border: (loop.isSelected || loop.isHovering) ? this.edgeWidth + 'px solid pink' : this.edgeWidth + 'px solid black',
+      border: (loop.isSelected ||loop.isHovering) ? this.edgeWidth + 'px solid pink' : this.edgeWidth + 'px solid black',
       height: loop.loopDiameter,
       width: loop.loopDiameter,
       zIndex: loop.zIndex
@@ -398,7 +384,7 @@ class Sketchpad extends React.Component {
     const arrowStyle = {
       position: 'relative',
       top: arc.isLoop ? arc.loopDiameter / 2 - this.arrowSize / 2 : arc.height / 2,
-      left: arc.isLoop ? arc.loopDiameter - this.arrowSize / 2 - this.edgeWidth/2 : -(this.arrowSize + this.edgeWidth) / 2,
+      left: arc.isLoop ? arc.loopDiameter - this.arrowSize / 2 - this.edgeWidth : -(this.arrowSize/2) - this.edgeWidth,
       width: 0,
       height: 0,
       borderLeft: this.arrowSize + 'px solid transparent',
@@ -446,7 +432,7 @@ class Sketchpad extends React.Component {
       yRatio: ev.clientY / this.padRect.height,
       edges: [],
       displayVertexData: this.displayVertexData,
-      color: this.defaultVertexColor,
+      color: selectedColor ? selectedColor.color : this.defaultVertexColor,
       inDegree: 0,
       outDegree: 0
     }
@@ -538,7 +524,7 @@ class Sketchpad extends React.Component {
       offsetX: 0,
       offsetY: 0,
       isLoop: vertex1.id === vertex2.id,
-      color: this.defaultEdgeColor
+      color: selectedColor ? selectedColor.color : this.defaultEdgeColor
     }
     vertex1.edges.push(edge);
     graphEdges.push(edge);

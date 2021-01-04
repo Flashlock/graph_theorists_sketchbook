@@ -1,6 +1,6 @@
 let selectedColor;
 //arrow color starts as blue
-let arrowColor = '#87ceeb';
+let arrowColor = '#007CC7';
 
 // eslint-disable-next-line no-undef
 class CommandContainer extends React.Component {
@@ -8,16 +8,16 @@ class CommandContainer extends React.Component {
     super(props);
     this.state = {};
     this.customColors = [];
-    this.displayPickedColor = '#33AAFF';
+    this.displayPickedColor = '#007CC7';
     for (let i = 0; i < 9; i++) {
       this.customColors.push({
-        color: 'white',
+        color: '#FFFFFF',
         id: i,
         palette: 'custom'
       });
     }
-    this.defaultColors = [{ color: 'red', id: 0, palette: 'default' }, { color: 'black', id: 1, palette: 'default' },
-      { color: '#33AAFF', id: 2, palette: 'default' }];
+    this.defaultColors = [{ color: '#FF0000', id: 0, palette: 'default' }, { color: '#000000', id: 1, palette: 'default' },
+      { color: '#007CC7', id: 2, palette: 'default' }];
 
     setInterval(this.update.bind(this), 33);
   }
@@ -278,11 +278,10 @@ class CommandContainer extends React.Component {
   ColorRenderer = (color) => {
     const isSelected = selectedColor && selectedColor.palette === color.palette && selectedColor.id === color.id;
     const style = {
-      background: color.color,
-      border: isSelected ? '2px solid pink' : '2px solid black'
+      background: color.color
     }
     return e(
-        'div',
+        'button',
         {
           key: color.palette + color.id.toString(),
           className: 'color_palette',
