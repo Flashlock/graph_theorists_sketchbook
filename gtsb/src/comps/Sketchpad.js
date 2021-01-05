@@ -16,8 +16,6 @@ document.getElementById('pad_wrapper').addEventListener('mousemove', (event)=> {
   mouseMoveCTX = event;
 });
 
-let buttonSelectedColor = '#B37212';
-
 let graphVertices = [];
 let graphEdges = [];
 let selectedVertices = [];
@@ -182,8 +180,8 @@ class Sketchpad extends React.Component {
             usingInDegree = !usingInDegree;
             break;
           case 'Deselect':
-            this.deselectElements(selectedVertices);
-            this.deselectElements(selectedEdges);
+            selectedVertices = this.deselectElements(selectedVertices);
+            selectedEdges = this.deselectElements(selectedEdges);
             break;
           default:
             break;
@@ -463,7 +461,8 @@ class Sketchpad extends React.Component {
       top: loop.vertex1.y + offset,
       left: loop.vertex1.x + offset,
       borderRadius: '50%',
-      border: (loop.isSelected ||loop.isHovering) ? this.edgeWidth + 'px solid pink' : this.edgeWidth + 'px solid black',
+      border: (loop.isSelected || loop.isHovering) ? this.edgeWidth + 'px solid pink' :
+          selectedColor ? this.edgeWidth + 'px solid ' + selectedColor.color : this.edgeWidth + 'px solid black',
       height: loop.loopDiameter,
       width: loop.loopDiameter,
       zIndex: loop.zIndex

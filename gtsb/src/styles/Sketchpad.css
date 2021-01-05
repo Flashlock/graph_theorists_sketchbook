@@ -18,7 +18,7 @@
   margin: 1%;
   border-radius: 9999px;
   padding: 1em;
-  box-shadow: 0 10px 10px black;
+  /*box-shadow: 0 10px 10px black;*/
   justify-content: space-between;
 }
 
