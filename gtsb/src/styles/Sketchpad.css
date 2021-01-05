@@ -58,7 +58,7 @@ html, body{
 }
 
 .component_header{
-  margin: 0;
+  margin: 0 0 .5em;
   text-align: center;
   text-decoration: underline;
 }
@@ -213,6 +213,7 @@ textarea{
   display: flex;
   justify-content: space-between;
   flex-direction: row;
+  margin-top: -10px;
 }
 
 #commands{
