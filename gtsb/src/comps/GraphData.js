@@ -53,6 +53,17 @@ class GraphData extends React.Component {
                 id: 'data_toggles'
               },
               [
+                  //save the graph
+                  e(
+                    'button',
+                      {
+                        onClick: this.receiveAction.bind(this, 'Save Graph'),
+                        className: 'data_button',
+                        id: 'save_sketch',
+                        key: 'save_sketch'
+                      },
+                      'Save Graph'
+                  ),
                 // Display vertex data
                 // eslint-disable-next-line no-undef
                 e(

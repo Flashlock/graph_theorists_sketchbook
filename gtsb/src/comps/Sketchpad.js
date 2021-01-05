@@ -108,6 +108,9 @@ class Sketchpad extends React.Component {
       //perform action
       if (actionCommand) {
         switch (actionCommand) {
+          case 'Save Graph':
+            this.saveGraph();
+            break;
           case 'Delete':
             //select all edges attached to vertices
             for (let i = 0; i < selectedVertices.length; i++) {
@@ -224,6 +227,85 @@ class Sketchpad extends React.Component {
           }
         }
       }
+  }
+
+  saveGraph = () => {
+    //render to canvas
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d');
+    canvas.width = this.padRect.width;
+    canvas.height = this.padRect.height;
+    const padOrigin = [this.padRect.left, this.padRect.top];
+
+    ctx.lineWidth=this.edgeWidth;
+    //render edges
+    for (let i = 0; i < graphEdges.length; i++) {
+      if(graphEdges[i].isArc && graphEdges[i].isLoop){
+        //nothing for now
+      }
+      else if(graphEdges[i].isArc){
+        //nothing for now
+      }
+      else if(graphEdges[i].isLoop){
+        //loop it
+          this.canvasLoop(graphEdges[i], ctx, padOrigin);
+        }
+      else{
+        //normal edge
+          this.canvasEdge(graphEdges[i], ctx, padOrigin);
+        }
+    }
+
+    ctx.lineWidth=1;
+    //Render Vertices
+    for(let i=0;i<graphVertices.length;i++) {
+      this.canvasVertex(graphVertices[i], ctx, padOrigin);
+    }
+
+    canvas.toBlob((blob) => {
+      const timeStamp = Date.now().toString();
+      const a = document.createElement('a');
+      document.body.append(a);
+      a.download = 'sketch_' + timeStamp + '.png';
+      a.href = URL.createObjectURL(blob);
+      a.click();
+      a.remove();
+    });
+  }
+
+  canvasVertex(vertex, ctx, padOrigin){
+    const x = vertex.x - padOrigin[0];
+    const y = vertex.y - padOrigin[1];
+    ctx.strokeStyle = vertex.color;
+    ctx.fillStyle = vertex.color;
+    ctx.beginPath();
+    ctx.arc(x, y, this.vertexDiameter / 2, 0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.fill();
+  }
+
+  canvasEdge(edge, ctx, padOrigin) {
+    const x1 = edge.vertex1.x - padOrigin[0];
+    const y1 = edge.vertex1.y - padOrigin[1];
+    const x2 = edge.vertex2.x - padOrigin[0];
+    const y2 = edge.vertex2.y - padOrigin[1];
+    ctx.strokeStyle = edge.color;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  }
+
+  canvasLoop(loop, ctx, padOrigin) {
+    //just like a vertex without the filling
+    const r = loop.loopDiameter / 2;
+    const offset = r * Math.sqrt(2) / 2;
+    const x = loop.vertex1.x - padOrigin[0] + offset;
+    const y = loop.vertex1.y - padOrigin[1] + offset;
+    ctx.strokeStyle = loop.color;
+    ctx.beginPath();
+    ctx.arc(x, y, loop.loopDiameter / 2, 0, 2 * Math.PI);
+    ctx.stroke();
   }
 
   //------------Element Renderers---------------------//
