@@ -19,25 +19,10 @@
   border-radius: 9999px;
   padding: 1em;
   /*box-shadow: 0 10px 10px black;*/
-  justify-content: space-between;
+  justify-content: center;
 }
-
-#page_title{
-  order: 2;
-}
-
-#home_link{
-  order: 1;
-  justify-self: left;
-  margin-left: 1em;
-  text-decoration: underline;
-}
-
-#tutorial_link{
-  order: 3;
-  justify-self: right;
-  margin-right: 1em;
-  text-decoration: underline;
+#header_banner h1{
+  font-size: 2.5em;
 }
 
 #home_link, #tutorial_link{

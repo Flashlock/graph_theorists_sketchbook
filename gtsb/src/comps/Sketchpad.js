@@ -461,8 +461,7 @@ class Sketchpad extends React.Component {
       top: loop.vertex1.y + offset,
       left: loop.vertex1.x + offset,
       borderRadius: '50%',
-      border: (loop.isSelected || loop.isHovering) ? this.edgeWidth + 'px solid pink' :
-          selectedColor ? this.edgeWidth + 'px solid ' + selectedColor.color : this.edgeWidth + 'px solid black',
+      border: (loop.isSelected || loop.isHovering) ? this.edgeWidth + 'px solid pink' : this.edgeWidth + 'px solid ' + loop.color,
       height: loop.loopDiameter,
       width: loop.loopDiameter,
       zIndex: loop.zIndex
