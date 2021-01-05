@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Graph Theorists Sketchpad</title>
+    <link rel="stylesheet" href="../styles/Sketchpad.css">
+</head>
+<body>
+<!-- Header Banner, link back to home page -->
+<div id = 'header_banner'>
+  <h1 id="page_title">Welcome to Graph Theorist's Sketchpad</h1>
+  <div id="linkedin">
+    <p>Find me on </p>
+    <a href="https://www.linkedin.com/in/austin-betts-a392b31bb/"> LinkedIn!</a>
+  </div>
+</div>
+
+<!-- We will put our React component inside this div. -->
+<div id="pad_wrapper">
+  <div id="data_container"></div>
+  <div id="sketchpad_container"></div>
+  <div id="command_container">
+    <h1 id="command_header"></h1>
+  </div>
+</div>
+
+<!-- Load React. -->
+<!-- Note: when deploying, replace "development.js" with "production.min.js". -->
+<script src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script>
+
+<!-- Load our React component. -->
+<script src="./comps/Sketchpad.js"></script>
+<script src="./comps/CommandContainer.js"></script>
+<script src="./comps/GraphData.js"></script>
+
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="/__/firebase/8.2.1/firebase-app.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="/__/firebase/8.2.1/firebase-analytics.js"></script>
+
+<!-- Initialize Firebase -->
+<script src="/__/firebase/init.js"></script>
+
+</body>
+</html>

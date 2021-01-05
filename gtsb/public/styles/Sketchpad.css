@@ -1,0 +1,259 @@
+:root{
+  --component-border: 4px solid #203647;
+  font-family: "Object Sans", sans-serif;
+  letter-spacing: .05em;
+  color: white;
+  background: radial-gradient(rgba(18,35,40,0), #12232E);
+}
+
+*{
+  margin: 0;
+  padding: 0;
+}
+
+#header_banner{
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  background: #203647;
+  margin: 1%;
+  border-radius: 9999px;
+  padding: 1em;
+  /*box-shadow: 0 10px 10px black;*/
+  justify-content: center;
+}
+#header_banner h1{
+  font-size: 2.5em;
+}
+
+#linkedin{
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  margin-top: 1em;
+}
+
+#linkedin a{
+  color: white;
+  margin-left: .3em;
+}
+
+#home_link, #tutorial_link{
+  color: white;
+  display: block;
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+html, body{
+  height: 100%;
+}
+
+#pad_wrapper{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  padding: 1%;
+}
+
+.component_header{
+  margin: 0 0 .5em;
+  text-align: center;
+  text-decoration: underline;
+}
+
+label{
+  font-weight: bold;
+  font-size: 1.17em;
+}
+
+#data_container, #command_container{
+  background: #203647;
+}
+
+button{
+  border-radius: 10px;
+  letter-spacing: .05em;
+  text-shadow: 0 3px 3px black;
+  background: radial-gradient(#007CC7, #203647);
+  color: white;
+  font-size: medium;
+  font-weight: bold;
+  margin: 10px;
+  padding: .5em;
+}
+button:focus{
+  outline: none;
+  opacity: .75;
+}
+button:active{
+  background: #203647;
+  opacity: .5;
+}
+
+/*------------------Graph Data-----------------------*/
+#data_container{
+  box-sizing: border-box;
+  padding: 1%;
+  border-radius: 25px;
+  flex-basis: 18%;
+  box-shadow: 5px 5px 10px black;
+}
+
+.graph_data{
+  text-align: center;
+  margin: 0;
+}
+
+.data_button{
+  margin: 0;
+}
+
+#matrix_data{
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+#data_toggles{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-row-gap: .5em;
+  grid-column-gap: .5em;
+  margin: .5em;
+}
+
+#save_sketch{
+  grid-column: 1/3;
+}
+
+#custom_id{
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+#graph_counts{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-content: center;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  grid-row-gap: 10px;
+  font-weight: bold;
+}
+
+table {
+  align-self: center;
+  border-left: 2px solid white;
+  border-right: 2px solid white;
+  width: 100%;
+  text-align: center;
+}
+
+textarea{
+  resize: none;
+  padding-top: .5em;
+  font-size: 1em;
+  letter-spacing: .05em;
+  font-family: "Object Sans", sans-serif;
+  border-width: 2px;
+}
+
+/*------------------Sketchpad-----------------------*/
+#sketchpad_container{
+  flex-basis: 50%;
+  border: var(--component-border);
+}
+
+#sketchpad {
+  background: white;
+  height: 100%;
+  clip-path: inset(0px 0px 0px 0px);
+}
+
+.vertex{
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.vertex_id, .vertex_deg{
+  position: relative;
+  color: black;
+  font-weight: bold;
+  font-size: larger;
+  background: white;
+  border-radius: 50%;
+}
+
+/*------------------Commands-----------------------*/
+#command_container {
+  box-sizing: border-box;
+  padding: 10px;
+  flex-basis: 18%;
+  border-radius: 25px;
+  height: 100%;
+  box-shadow: -5px 5px 10px black;
+}
+
+#commands_comp{
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+#commands_and_colors{
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  margin-top: -10px;
+}
+
+#commands{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#colors{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  justify-items: center;
+  grid-column-gap: 10%;
+  margin: 1em;
+}
+
+.color_header{
+  grid-column: 1/4;
+  text-align: center;
+  margin: 0 0 -5%;
+}
+
+.color_picker{
+  grid-column: 1/4;
+  width: 100%;
+}
+
+.color_palette{
+  width: 100%;
+  height: 50%;
+  border-radius: 9999px;
+}
+.color_palette:focus{
+  opacity: 1;
+}
+
+#palette_hex_code, #arrow_color_hex_code{
+  letter-spacing: .25em;
+}
+
+#arrow_color{
+  margin: 5%;
+}
