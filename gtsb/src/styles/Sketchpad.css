@@ -13,6 +13,7 @@
 
 #header_banner{
   display: flex;
+  flex-direction: column;
   text-align: center;
   background: #203647;
   margin: 1%;
@@ -23,6 +24,18 @@
 }
 #header_banner h1{
   font-size: 2.5em;
+}
+
+#linkedin{
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  margin-top: 1em;
+}
+
+#linkedin a{
+  color: white;
+  margin-left: .3em;
 }
 
 #home_link, #tutorial_link{
