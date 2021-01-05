@@ -240,20 +240,15 @@ class Sketchpad extends React.Component {
     ctx.lineWidth=this.edgeWidth;
     //render edges
     for (let i = 0; i < graphEdges.length; i++) {
-      if(graphEdges[i].isArc && graphEdges[i].isLoop){
-        //nothing for now
+      if(graphEdges[i].isLoop){
+        this.canvasLoop(graphEdges[i], ctx, padOrigin);
       }
-      else if(graphEdges[i].isArc){
-        //nothing for now
-      }
-      else if(graphEdges[i].isLoop){
-        //loop it
-          this.canvasLoop(graphEdges[i], ctx, padOrigin);
-        }
       else{
-        //normal edge
-          this.canvasEdge(graphEdges[i], ctx, padOrigin);
+        this.canvasEdge(graphEdges[i], ctx, padOrigin);
+        if(graphEdges[i].isArc){
+          this.canvasEdgArrow(graphEdges[i], ctx, padOrigin);
         }
+      }
     }
 
     ctx.lineWidth=1;
@@ -306,6 +301,43 @@ class Sketchpad extends React.Component {
     ctx.beginPath();
     ctx.arc(x, y, loop.loopDiameter / 2, 0, 2 * Math.PI);
     ctx.stroke();
+  }
+
+  canvasEdgArrow(arc, ctx, padOrigin) {
+    const vertex1 = arc.targetVertex;
+    const vertex2 = arc.vertex1.id === vertex1.id ? arc.vertex2 : arc.vertex1;
+    const x1 = vertex1.x - padOrigin[0];
+    const x2 = vertex2.x - padOrigin[0];
+    const y1 = vertex1.y - padOrigin[1];
+    const y2 = vertex2.y - padOrigin[1];
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    //find unit vector length h * sqrt(2) away from target vector
+    const hVector = [dx / Math.sqrt(dx * dx + dy * dy), dy / Math.sqrt(dx * dx + dy * dy)];
+    //stick it at midpoint
+    const xm = (x1 + x2) / 2;
+    const ym = (y1 + y2) / 2;
+    hVector[0] += xm;
+    hVector[1] += ym;
+    //rotate it +-45 degrees
+    const point1 = this.rotateVector(hVector, Math.PI / 4);
+    const point2 = this.rotateVector(hVector, -Math.PI / 4);
+    //draw the triangle
+    ctx.strokeStyle = arrowColor;
+    ctx.fillStyle = arrowColor;
+    ctx.beginPath();
+    ctx.moveTo(xm, ym);
+    ctx.lineTo(point1[0], point1[1]);
+    ctx.lineTo(point2[0], point2[1]);
+    ctx.fill();
+  }
+
+  rotateVector(vector, theta) {
+    const r1 = [Math.cos(theta), -Math.sin(theta)];
+    const r2 = [Math.sin(theta), Math.cos(theta)];
+    const x = r1[0] * vector[0] + r1[1] * vector[1];
+    const y = r2[0] * vector[0] + r2[1] * vector[1];
+    return [x, y];
   }
 
   //------------Element Renderers---------------------//
