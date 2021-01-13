@@ -1,6 +1,3 @@
-// eslint-disable-next-line no-unused-expressions
-'use strict';
-
 // eslint-disable-next-line no-undef
 const e = React.createElement;
 
@@ -914,6 +911,7 @@ class Sketchpad extends React.Component {
       //don't care if I've already been there
       if (visitedVertexPairs.find((pair) => pair === [v1.id, v2.id] || pair === [v2.id, v1.id]))
         continue;
+      visitedVertexPairs.push([v1.id, v2.id]);
       this.applyParallelEdges(v1, v2);
     }
   }
