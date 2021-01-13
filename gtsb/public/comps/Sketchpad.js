@@ -205,6 +205,39 @@ class Sketchpad extends React.Component {
         this.arrowColor = arrowColor;
       }
 
+      //selector to draw edges/arcs?
+      if (selectedVertices.length > 1) {
+        if (commandMode === 'Draw Edge') {
+          //make a complete graph
+          let seenPairs = [];
+          for (let i = 0; i < selectedVertices.length; i++) {
+            for (let j = 0; j < selectedVertices.length; j++) {
+              //no loops
+              if (i === j)
+                continue;
+
+              const ij = i.toString() + ' ' + j.toString();
+              const ji = j.toString() + ' ' + i.toString();
+              //have I already seen this pair?
+              if (seenPairs.find((pair) => pair === ij || pair === ji))
+                continue;
+
+              //make a connection between [i] and [j]
+              this.drawEdge(selectedVertices[i], selectedVertices[j]);
+
+              //add the pair to the list
+              seenPairs.push(ij);
+            }
+          }
+        } else
+          if (commandMode === 'Draw Arc') {
+            //make a path
+          }
+      }
+      if (commandMode === 'Draw Edge' || commandMode === 'Draw Arc') {
+        selectedVertices = this.deselectElements(selectedVertices);
+      }
+
       updateCallers[1] = true;
       this.setState(this.state);
     } else
