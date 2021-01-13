@@ -271,6 +271,8 @@ class CommandContainer extends React.Component {
   }
 
   receiveCommand = (command) => {
+    if (commandMode === 'Selector' && (command === 'Draw Edge' || command === 'Draw Arc'))
+      actionCommand = 'Generate Graph'
     commandMode = command;
     updateCall = true;
   }

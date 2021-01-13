@@ -103,6 +103,7 @@ class Sketchpad extends React.Component {
     }
 
     if (updateCall && !updateCallers[1]) {
+
       //perform action
       if (actionCommand) {
         switch (actionCommand) {
@@ -183,6 +184,41 @@ class Sketchpad extends React.Component {
             selectedVertices = this.deselectElements(selectedVertices);
             selectedEdges = this.deselectElements(selectedEdges);
             break;
+          case 'Generate Graph':
+            //selector to draw edges/arcs?
+            if (selectedVertices.length > 1) {
+              if (commandMode === 'Draw Edge') {
+                //make a complete graph
+                let seenPairs = [];
+                for (let i = 0; i < selectedVertices.length; i++) {
+                  for (let j = 0; j < selectedVertices.length; j++) {
+                    //no loops
+                    if (i === j)
+                      continue;
+
+                    const ij = i.toString() + ' ' + j.toString();
+                    const ji = j.toString() + ' ' + i.toString();
+                    //have I already seen this pair?
+                    if (seenPairs.find((pair) => pair === ij || pair === ji))
+                      continue;
+
+                    //make a connection between [i] and [j]
+                    this.drawEdge(selectedVertices[i], selectedVertices[j]);
+
+                    //add the pair to the list
+                    seenPairs.push(ij);
+                  }
+                }
+              } else
+                if (commandMode === 'Draw Arc') {
+                  //make a path
+                  for (let i = 0; i < selectedVertices.length - 1; i++) {
+                    this.drawArc(selectedVertices[i], selectedVertices[i + 1]);
+                  }
+                }
+            }
+            selectedVertices = this.deselectElements(selectedVertices);
+            break;
           default:
             break;
         }
@@ -203,39 +239,6 @@ class Sketchpad extends React.Component {
       //update arrow color?
       if (this.arrowColor !== arrowColor) {
         this.arrowColor = arrowColor;
-      }
-
-      //selector to draw edges/arcs?
-      if (selectedVertices.length > 1) {
-        if (commandMode === 'Draw Edge') {
-          //make a complete graph
-          let seenPairs = [];
-          for (let i = 0; i < selectedVertices.length; i++) {
-            for (let j = 0; j < selectedVertices.length; j++) {
-              //no loops
-              if (i === j)
-                continue;
-
-              const ij = i.toString() + ' ' + j.toString();
-              const ji = j.toString() + ' ' + i.toString();
-              //have I already seen this pair?
-              if (seenPairs.find((pair) => pair === ij || pair === ji))
-                continue;
-
-              //make a connection between [i] and [j]
-              this.drawEdge(selectedVertices[i], selectedVertices[j]);
-
-              //add the pair to the list
-              seenPairs.push(ij);
-            }
-          }
-        } else
-          if (commandMode === 'Draw Arc') {
-            //make a path
-          }
-      }
-      if (commandMode === 'Draw Edge' || commandMode === 'Draw Arc') {
-        selectedVertices = this.deselectElements(selectedVertices);
       }
 
       updateCallers[1] = true;
@@ -685,6 +688,14 @@ class Sketchpad extends React.Component {
     return edge;
   }
 
+  drawArc = (vertex1, vertex2) => {
+    const arc = this.drawEdge(vertex2, vertex1);
+    arc.isArc = true;
+    arc.targetVertex = vertex2;
+    vertex2.inDegree++;
+    vertex1.outDegree++;
+  }
+
   applyParallelEdges = (vertex1, vertex2) => {
     //find parallel edges between these two vertices and calculate offsets
     const parallelEdges = vertex1.edges.filter((edge) => {
@@ -816,11 +827,7 @@ class Sketchpad extends React.Component {
             selectedVertices[1].outDegree++;
           } else
             if (commandMode === 'Draw Arc') {
-              const arc = this.drawEdge(selectedVertices[1], selectedVertices[0]);
-              arc.isArc = true;
-              arc.targetVertex = selectedVertices[1];
-              selectedVertices[1].inDegree++;
-              selectedVertices[0].outDegree++;
+              this.drawArc(selectedVertices[0], selectedVertices[1])
             } else {
               console.log("Whoopsie. Selecting an element in: ", commandMode);
             }
