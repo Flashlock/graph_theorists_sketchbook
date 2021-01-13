@@ -20,7 +20,6 @@
   <div id="data_container"></div>
   <div id="sketchpad_container"></div>
   <div id="command_container">
-    <h1 id="command_header"></h1>
   </div>
 </div>
 
@@ -35,14 +34,24 @@
 <script src="./comps/GraphData.js"></script>
 
 <!-- The core Firebase JS SDK is always required and must be listed first -->
-<script src="/__/firebase/8.2.1/firebase-app.js"></script>
+<script>
+  const firebase=require('firebase/app');
 
-<!-- TODO: Add SDKs for Firebase products that you want to use
-     https://firebase.google.com/docs/web/setup#available-libraries -->
-<script src="/__/firebase/8.2.1/firebase-analytics.js"></script>
+  require('firebase/analytics');
+  const firebaseConfig = {
+    apiKey: "AIzaSyAnOzgIAcpZ9BbXzT-NQqpz1KY_EyESw0w",
+    authDomain: "graph-theorists-sketchbo-b9a3d.firebaseapp.com",
+    databaseURL: "https://graph-theorists-sketchbo-b9a3d-default-rtdb.firebaseio.com",
+    projectId: "graph-theorists-sketchbo-b9a3d",
+    storageBucket: "graph-theorists-sketchbo-b9a3d.appspot.com",
+    messagingSenderId: "640297835228",
+    appId: "1:640297835228:web:553208fae685f985cc3219",
+    measurementId: "G-98EQ0XDZ55"
+  };
 
-<!-- Initialize Firebase -->
-<script src="/__/firebase/init.js"></script>
+  firebase.analytics();
+  firebase.initializeApp(firebaseConfig);
+</script>
 
 </body>
 </html>
