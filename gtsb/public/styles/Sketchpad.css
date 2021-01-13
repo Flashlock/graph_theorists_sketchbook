@@ -19,7 +19,7 @@
   margin: 1%;
   border-radius: 9999px;
   padding: 1em;
-  /*box-shadow: 0 10px 10px black;*/
+  box-shadow: 0 5px 10px black;
   justify-content: center;
 }
 #header_banner h1{
@@ -38,6 +38,10 @@
   margin-left: .3em;
 }
 
+#linkedin a:hover{
+  color: pink;
+}
+
 
 #home_link, #tutorial_link{
   color: white;
@@ -46,7 +50,7 @@
   font-weight: bold;
 }
 
-html, body{
+html{
   height: 100%;
 }
 
